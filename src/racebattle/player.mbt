@@ -6,11 +6,19 @@ let rotation : Angle = Angle::from_deg(180.0 / 60.0)
 const MOVE_SPEED : Float = 0.5
 
 ///|
+/// How much slower the sprite sheet should cycle.
+/// A value of 1 means play the animation at full speed, 1 sprite per frame.
+/// A value of 60 means play 1 sprite per second (because screen is 60 FPS)
+const PLAYER_SPRITE_ANIMATION_SLOWDOWN : Int = 4
+
+///|
 pub struct Player {
   // manually doing "struct of arrays" optimization,
   // mostly as an experiment to see how tedious it is,
   // but also because MoonBit doesn't allow "#valtype"s in other "#valtype"s
   sprite_sheet : FixedArray[@firefly.SubImage]
+  mut sprite_index : Int
+  mut sprite_time : Int
   peer : @firefly.Peer?
   mut pos : Vec2
   mut angle : Angle
@@ -21,7 +29,14 @@ pub fn Player::new(
   sprite_sheet : FixedArray[@firefly.SubImage],
   peer : @firefly.Peer?,
 ) -> Player {
-  Player::{ sprite_sheet, peer, pos: Vec2::default(), angle: Angle::default() }
+  Player::{
+    sprite_sheet,
+    sprite_index: 0,
+    sprite_time: 0,
+    peer,
+    pos: Vec2::default(),
+    angle: Angle::default(),
+  }
 }
 
 ///|
@@ -37,13 +52,21 @@ pub fn Player::update(self : Player) -> Unit {
   }
   let dir = Vec2::from_angle(self.angle).scale(MOVE_SPEED)
   self.pos = self.pos + dir.scale(MOVE_SPEED)
+  self.sprite_time += 1
+  if self.sprite_time >= PLAYER_SPRITE_ANIMATION_SLOWDOWN {
+    self.sprite_time = 0
+    self.sprite_index = (self.sprite_index + 1) % self.sprite_sheet.length()
+  }
 }
 
 ///|
 pub fn Player::render(self : Player, world : World) -> Unit {
   let point = world.camera.world_vec2_to_camera_space(self.pos)
   if Some(world.me) == self.peer {
-    @firefly.draw_sub_image(self.sprite_sheet[0], point - Point::new(4, 5))
+    @firefly.draw_sub_image(
+      self.sprite_sheet[self.sprite_index],
+      point - Point::new(4, 5),
+    )
     @firefly.draw_point(point.x, point.y, Red)
   } else {
     @firefly.draw_circle(
