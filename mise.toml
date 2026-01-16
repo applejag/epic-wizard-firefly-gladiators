@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2025 Kalle Fagerberg
+#
+# SPDX-License-Identifier: CC0-1.0
+
+[tools]
+uv = "latest"
+"pipx:reuse" = "latest"
+
+[tasks.build]
+description = "Build the game using firefly CLI"
+run = "ff build"
+
+[tasks.start]
+description = "Run the game using firefly emulator"
+run = "firefly-emulator --id applejag.firefly-jam-2026"
+depends = ['build']
+
+[tasks.test]
+description = "Run tests"
+run = "moon test"
+
+[settings]
+experimental = true

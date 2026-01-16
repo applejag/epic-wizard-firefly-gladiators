@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2025 Kalle Fagerberg
+#
+# SPDX-License-Identifier: CC0-1.0
+
+author_id = "applejag"
+app_id = "firefly-jam-2026"
+author_name = "Applejag"
+app_name = "Firefly Jam 2026"
+lang = "moon"
+
+[files]
+#thing = { path = "assets/thing.png" }
