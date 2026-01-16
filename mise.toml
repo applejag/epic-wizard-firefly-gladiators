@@ -8,7 +8,7 @@ uv = "latest"
 
 [tasks.build]
 description = "Build the game using firefly CLI"
-run = "ff build"
+run = "ff build --no-opt"
 
 [tasks.start]
 description = "Run the game using firefly emulator"
