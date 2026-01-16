@@ -8,3 +8,5 @@ SPDX-License-Identifier: CC0-1.0
 
 Game written in [MoonBit](https://www.moonbitlang.com/)
 for the [Firefly Zero Jam #1](https://itch.io/jam/firefly-jam).
+
+Jam theme: firefly
