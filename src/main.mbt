@@ -13,7 +13,12 @@ pub fn boot() -> Unit {
   //let assets = Assets::load()
   racebattle_world.val = @racebattle.World::{
     ..racebattle_world.val,
-    players: [@racebattle.Player::new(@firefly.get_me())],
+    players: [
+      @racebattle.Player::new(Some(@firefly.get_me())),
+      @racebattle.Player::new(None),
+      @racebattle.Player::new(None),
+    ],
+    me: @firefly.get_me(),
   }
 }
 
@@ -24,5 +29,5 @@ pub fn update() -> Unit {
 
 ///|
 pub fn render() -> Unit {
-
+  racebattle_world.val.render()
 }

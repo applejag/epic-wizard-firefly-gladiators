@@ -6,7 +6,7 @@ const SCREEN_HEIGHT_HALF_F : Float = 80
 
 ///|
 pub struct Camera {
-  pos : Vec2
+  mut pos : Vec2
 } derive(Default)
 
 ///|
@@ -23,9 +23,10 @@ fn Camera::world_point_to_camera_space(self : Camera, point : Point) -> Point {
 
 ///|
 fn Camera::update(self : Camera, world : World) -> Unit {
-  let my_peer = @firefly.get_me()
-  let maybe_player = world.players.iter().find_first(p => p.peer == my_peer)
+  let maybe_player = world.players
+    .iter()
+    .find_first(p => p.peer == Some(world.me))
   if maybe_player is Some(player) {
-    player.update()
+    self.pos = player.pos - Vec2::new(SCREEN_WIDTH_HALF_F, SCREEN_HEIGHT_HALF_F)
   }
 }
