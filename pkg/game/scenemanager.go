@@ -3,6 +3,7 @@ package game
 import (
 	"firefly-jam-2026/assets"
 	"firefly-jam-2026/pkg/scenes"
+	"firefly-jam-2026/pkg/scenes/field"
 	"firefly-jam-2026/pkg/scenes/insectarium"
 	"firefly-jam-2026/pkg/scenes/mainmenu"
 	"firefly-jam-2026/pkg/scenes/racebattle"
@@ -22,6 +23,7 @@ type SceneManager struct {
 	RaceBattle  racebattle.Scene
 	Insectarium insectarium.Scene
 	Shop        shop.Scene
+	Field       field.Scene
 }
 
 // SwitchScene implements [scenes.SceneSwitcher].
@@ -37,9 +39,10 @@ func (s *SceneManager) Boot() {
 
 	s.Transition = util.NewTransition(assets.TransitionSheet.Animated(12), firefly.S(8, 8))
 
+	s.Insectarium.Boot()
+	s.Field.Boot()
 	s.MainMenu.Boot()
 	s.RaceBattle.Boot()
-	s.Insectarium.Boot()
 	s.Shop.Boot()
 }
 
@@ -48,6 +51,8 @@ func (s *SceneManager) Update() {
 		switch s.CurrentScene {
 		case scenes.Insectarium:
 			s.Insectarium.Update()
+		case scenes.Field:
+			s.Field.Update()
 		case scenes.MainMenu:
 			s.MainMenu.Update()
 		case scenes.RaceBattle:
@@ -70,6 +75,8 @@ func (s *SceneManager) Render() {
 	switch scene {
 	case scenes.Insectarium:
 		s.Insectarium.Render()
+	case scenes.Field:
+		s.Field.Render()
 	case scenes.MainMenu:
 		s.MainMenu.Render()
 	case scenes.RaceBattle:

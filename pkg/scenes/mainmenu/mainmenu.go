@@ -62,7 +62,7 @@ func (m *Menu) Update() {
 	if buttons.JustPressed(m.buttonsOld).S {
 		switch m.Button {
 		case ButtonNewGame:
-			scenes.SwitchScene(scenes.Shop)
+			scenes.SwitchScene(scenes.Field)
 		}
 	}
 	m.buttonsOld = buttons
