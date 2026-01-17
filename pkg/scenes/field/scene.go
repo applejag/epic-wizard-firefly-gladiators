@@ -4,19 +4,28 @@ import (
 	"cmp"
 	"firefly-jam-2026/assets"
 	"firefly-jam-2026/pkg/state"
+	"firefly-jam-2026/pkg/util"
 	"slices"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
 
 type Scene struct {
+	dpad4Old   firefly.DPad4
+	buttonsOld firefly.Buttons
+
 	fireflies []Firefly
+
+	highlight util.AnimatedSheet
+	focusedID int
 }
 
 func (s *Scene) Boot() {
+	s.highlight = assets.FireflyHighlight.Animated(2)
 }
 
 func (s *Scene) Update() {
+	s.highlight.Update()
 	for i := range s.fireflies {
 		s.fireflies[i].Update()
 	}
@@ -24,6 +33,56 @@ func (s *Scene) Update() {
 	slices.SortFunc(s.fireflies, func(a, b Firefly) int {
 		return cmp.Compare(a.pos.Y, b.pos.Y)
 	})
+
+	me := firefly.GetMe()
+	if pad, ok := firefly.ReadPad(me); ok {
+		dpad4 := pad.DPad4()
+		justPressed := dpad4.JustPressed(s.dpad4Old)
+		if justPressed != firefly.DPad4None {
+			s.handleInputDPad4(justPressed)
+		}
+		s.dpad4Old = dpad4
+	} else {
+		s.dpad4Old = firefly.DPad4None
+	}
+
+	buttons := firefly.ReadButtons(me)
+	if justPressed := buttons.JustPressed(s.buttonsOld); justPressed.Any() {
+		s.handleInputButtons(justPressed)
+	}
+	s.buttonsOld = buttons
+}
+
+func (s *Scene) handleInputDPad4(justPressed firefly.DPad4) {
+	if len(s.fireflies) == 0 {
+		return
+	}
+	if s.focusedID == -1 {
+		s.focusedID = s.fireflies[0].id
+		return
+	}
+	ids := make([]int, len(s.fireflies))
+	for i, f := range s.fireflies {
+		ids[i] = f.id
+	}
+	slices.Sort(ids)
+	idsIndex := slices.Index(ids, s.focusedID)
+
+	switch justPressed {
+	case firefly.DPad4Down, firefly.DPad4Right:
+		idsIndex = (idsIndex + 1) % len(ids)
+	case firefly.DPad4Up, firefly.DPad4Left:
+		idsIndex = (idsIndex + len(ids) - 1) % len(ids)
+	}
+
+	newID := ids[idsIndex]
+	s.focusedID = newID
+}
+
+func (s *Scene) handleInputButtons(justPressed firefly.Buttons) {
+	if justPressed.E {
+		s.focusedID = -1
+	}
 }
 
 func (s *Scene) Render() {
@@ -33,6 +92,32 @@ func (s *Scene) Render() {
 	for i := range s.fireflies {
 		s.fireflies[i].Render()
 	}
+
+	if len(s.fireflies) > 0 {
+		if idx := s.FindFireflyByID(s.focusedID); idx != -1 {
+			s.renderFocused(s.fireflies[idx])
+		}
+	}
+}
+
+func (s *Scene) renderFocused(f Firefly) {
+	pos := f.pos.Round().Point()
+	s.highlight.Draw(pos.Sub(firefly.P(15, 15)))
+
+	dataIndex := state.Game.FindFireflyByID(f.id)
+	if dataIndex == -1 {
+		panic("should never be -1 here")
+	}
+	data := state.Game.Fireflies[dataIndex]
+
+	text := util.WordWrap(
+		data.Name.String(),
+		firefly.Width-75,
+		assets.FontEG_6x9.CharWidth(),
+	)
+
+	assets.FontEG_6x9.Draw(text, firefly.P(73, 12), firefly.ColorDarkGray)
+	assets.FontEG_6x9.Draw(text, firefly.P(73, 11), firefly.ColorWhite)
 }
 
 func (s *Scene) FindFireflyByID(id int) int {
@@ -45,6 +130,7 @@ func (s *Scene) FindFireflyByID(id int) int {
 }
 
 func (s *Scene) OnSceneSwitch() {
+	s.focusedID = -1
 	for _, f := range state.Game.Fireflies {
 		idx := s.FindFireflyByID(f.ID)
 		if idx == -1 {

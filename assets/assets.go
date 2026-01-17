@@ -7,8 +7,10 @@ import (
 )
 
 var (
-	fieldBuf [19213]byte
-	Field    firefly.Image
+	fieldBuf            [19213]byte
+	Field               firefly.Image
+	fireflyHighlightBuf [262]byte
+	FireflyHighlight    util.SpriteSheet
 
 	racingMapBuf         [192013]byte
 	RacingMap            firefly.Image
@@ -59,8 +61,9 @@ var (
 )
 
 func Load() {
-	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("cash-banner")))
+	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("firefly-hi")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
+	FireflyHighlight = util.SplitImageBySize(firefly.LoadImage("firefly-hi", fireflyHighlightBuf[:]), firefly.S(32, 32))
 	RacingMap = firefly.LoadImage("racing-map", racingMapBuf[:])
 	RacingMapTrees = firefly.LoadImage("racing-map-trees", racingMapTreesBuf[:])
 	RacingMapTreetops = firefly.LoadImage("racing-map-treetops", racingMapTreetopsBuf[:])
