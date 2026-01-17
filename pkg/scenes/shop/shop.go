@@ -3,6 +3,7 @@ package shop
 import (
 	"firefly-jam-2026/assets"
 	"firefly-jam-2026/pkg/util"
+	"fmt"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -24,17 +25,6 @@ func (s *Shop) Boot() {
 	s.itemBGs = assets.ShopItem[0:4]
 	s.drugBGs = assets.ShopItem[5:6]
 	s.sellBG = assets.ShopItem[4]
-
-	s.Items = append(s.Items, Item{
-		Price:    0,
-		Quantity: -1,
-		Bg:       s.sellBG,
-		Icon:     assets.ShopItem[7],
-	})
-
-	s.AddDrugItem(100, -1, assets.ShopItem[7])
-	s.AddDrugItem(100, -1, assets.ShopItem[7])
-	s.AddDrugItem(100, -1, assets.ShopItem[7])
 }
 
 func (s *Shop) Update() {
@@ -75,6 +65,10 @@ func (s *Shop) Render() {
 		pos := startPos.Add(firefly.P((i%4)*offset.W, (i/4)*offset.H))
 		item.Bg.Draw(pos)
 		item.Icon.Draw(pos)
+		textWidth := len(item.priceStr) * assets.FontPico8_4x6.CharWidth()
+		if item.Quantity > 0 {
+			assets.FontPico8_4x6.Draw(item.priceStr, pos.Add(firefly.P(offset.W/2-textWidth/2, offset.H-6)), firefly.ColorBlack)
+		}
 		if s.Selected == i {
 			s.selectedAnim.Draw(pos)
 		}
@@ -84,6 +78,7 @@ func (s *Shop) Render() {
 func (s *Shop) AddDrugItem(price, quantity int, icon firefly.SubImage) {
 	s.Items = append(s.Items, Item{
 		Price:    price,
+		priceStr: formatPrice(price),
 		Quantity: quantity,
 		Icon:     icon,
 		Bg:       util.RandomSliceElem(s.drugBGs),
@@ -93,14 +88,32 @@ func (s *Shop) AddDrugItem(price, quantity int, icon firefly.SubImage) {
 func (s *Shop) AddItem(price, quantity int, icon firefly.SubImage) {
 	s.Items = append(s.Items, Item{
 		Price:    price,
+		priceStr: formatPrice(price),
 		Quantity: quantity,
 		Icon:     icon,
 		Bg:       util.RandomSliceElem(s.itemBGs),
 	})
 }
 
+func (s *Shop) AddSellItem() {
+	s.Items = append(s.Items, Item{
+		Price:    0,
+		Quantity: -1,
+		Bg:       s.sellBG,
+		Icon:     assets.ShopItem[7],
+	})
+}
+
+func formatPrice(price int) string {
+	if price == 0 {
+		return "FREE"
+	}
+	return fmt.Sprintf("$%d", price)
+}
+
 type Item struct {
 	Price    int
+	priceStr string
 	Quantity int
 	Icon     firefly.SubImage
 	Bg       firefly.SubImage

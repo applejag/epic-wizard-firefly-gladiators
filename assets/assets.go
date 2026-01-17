@@ -46,12 +46,14 @@ var (
 	transitionSheetBuf [134]byte
 	TransitionSheet    util.SpriteSheet
 
-	fontEG_6x9Buf [655]byte
-	FontEG_6x9    firefly.Font
+	fontEG_6x9Buf    [655]byte
+	FontEG_6x9       firefly.Font
+	fontPico8_4x6Buf [295]byte
+	FontPico8_4x6    firefly.Font
 )
 
 func Load() {
-	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("shop-item")))
+	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("pico8_4x6")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	RacingMap = firefly.LoadImage("racing-map", racingMapBuf[:])
 	RacingMapTrees = firefly.LoadImage("racing-map-trees", racingMapTreesBuf[:])
@@ -70,4 +72,5 @@ func Load() {
 	ShopItem = util.SplitImageByCount(firefly.LoadImage("shop-item", shopItemBuf[:]), firefly.S(4, 3))
 	TransitionSheet = util.SplitImageByCount(firefly.LoadImage("transition", transitionSheetBuf[:]), firefly.S(4, 4))
 	FontEG_6x9 = firefly.LoadFont("eg_6x9", fontEG_6x9Buf[:])
+	FontPico8_4x6 = firefly.LoadFont("pico8_4x6", fontPico8_4x6Buf[:])
 }
