@@ -73,8 +73,12 @@ func (f *Firefly) Update() {
 		f.UpdatePlayerInput()
 	}
 	dir := util.AngleToVec2(f.Angle)
-	f.Pos = f.Pos.Add(dir.Scale(MoveMaxSpeed * f.SpeedFactor))
-	f.PathTracker.Update(f.Pos)
+	newPos := f.Pos.Add(dir.Scale(MoveMaxSpeed * f.SpeedFactor))
+	maskColor := assets.RacingMapMask.GetColorAt(newPos.Point())
+	if maskColor == firefly.ColorWhite {
+		f.Pos = newPos
+		f.PathTracker.Update(f.Pos)
+	}
 }
 
 func (f *Firefly) UpdatePlayerInput() {
