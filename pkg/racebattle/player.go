@@ -13,6 +13,8 @@ const (
 	FPS    = 60
 	FPSInv = 1.0 / FPS
 
+	FireflyAnimationFPS = 30
+
 	// Rotation speed at top speed. Angle is the rotation speed per second
 	RotationSpeedWhenMovingRad = (110.0 / FPS) * util.DegToRad
 	// Rotation speed when standing completely still. Angle is the rotation speed per second
@@ -32,8 +34,8 @@ type Firefly struct {
 	IsPlayer bool
 	Peer     firefly.Peer
 
-	SpriteSheet    util.SpriteSheet
-	SpriteSheetRev util.SpriteSheet
+	SpriteSheet    util.AnimatedSheet
+	SpriteSheetRev util.AnimatedSheet
 
 	Pos         util.Vec2
 	Angle       firefly.Angle
@@ -44,8 +46,8 @@ func NewFireflyPlayer(peer firefly.Peer, pos util.Vec2) Firefly {
 	return Firefly{
 		IsPlayer:       true,
 		Peer:           peer,
-		SpriteSheet:    assets.FireflySheet,
-		SpriteSheetRev: assets.FireflySheetRev,
+		SpriteSheet:    assets.FireflySheet.Animated(FireflyAnimationFPS),
+		SpriteSheetRev: assets.FireflySheetRev.Animated(FireflyAnimationFPS),
 		Pos:            pos,
 	}
 }
@@ -53,8 +55,8 @@ func NewFireflyPlayer(peer firefly.Peer, pos util.Vec2) Firefly {
 func NewFireflyAI(pos util.Vec2) Firefly {
 	return Firefly{
 		IsPlayer:       false,
-		SpriteSheet:    assets.FireflySheet,
-		SpriteSheetRev: assets.FireflySheetRev,
+		SpriteSheet:    assets.FireflySheet.Animated(FireflyAnimationFPS),
+		SpriteSheetRev: assets.FireflySheetRev.Animated(FireflyAnimationFPS),
 		Pos:            pos,
 	}
 }

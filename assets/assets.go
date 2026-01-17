@@ -16,6 +16,6 @@ var (
 func Load() {
 	Field = firefly.LoadImage("field", nil)
 	RacingMap = firefly.LoadImage("racing-map", nil)
-	FireflySheet = util.SplitImageByCount(firefly.LoadImage("firefly", nil), firefly.S(7, 1), 30)
-	FireflySheetRev = util.SplitImageByCount(firefly.LoadImage("firefly-rev", nil), firefly.S(7, 1), 30)
+	FireflySheet = util.SplitImageByCount(firefly.LoadImage("firefly", nil), firefly.S(7, 1))
+	FireflySheetRev = util.SplitImageByCount(firefly.LoadImage("firefly-rev", nil), firefly.S(7, 1))
 }
