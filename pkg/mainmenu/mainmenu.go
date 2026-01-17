@@ -66,6 +66,7 @@ func (m *Menu) Update() {
 
 func (m *Menu) Render() {
 	m.TitleScreen.Draw(firefly.P(0, 0))
+	assets.TitleNoContinue.Draw(firefly.P(91, 61))
 	if pos, ok := m.Button.HighlightPosition(); ok {
 		m.ButtonHighlight.Draw(pos)
 	}

@@ -27,12 +27,14 @@ var (
 	TitleScreen             util.SpriteSheet
 	titleButtonHighlightBuf [702]byte
 	TitleButtonHighlight    util.SpriteSheet
+	titleNoContinueBuf      [423]byte
+	TitleNoContinue         firefly.Image
 	transitionSheetBuf      [134]byte
 	TransitionSheet         util.SpriteSheet
 )
 
 func Load() {
-	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("title-button-hi")))
+	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("title-no-continue")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	RacingMap = firefly.LoadImage("racing-map", racingMapBuf[:])
 	RacingMapTrees = firefly.LoadImage("racing-map-trees", racingMapTreesBuf[:])
@@ -43,5 +45,6 @@ func Load() {
 	FireflySheetRev = util.SplitImageByCount(firefly.LoadImage("firefly-rev", fireflySheetRevBuf[:]), firefly.S(7, 1))
 	TitleScreen = util.SplitImageByCount(firefly.LoadImage("title-screen", titleScreenBuf[:]), firefly.S(2, 1))
 	TitleButtonHighlight = util.SplitImageByCount(firefly.LoadImage("title-button-hi", titleButtonHighlightBuf[:]), firefly.S(2, 1))
+	TitleNoContinue = firefly.LoadImage("title-no-continue", titleNoContinueBuf[:])
 	TransitionSheet = util.SplitImageByCount(firefly.LoadImage("transition", transitionSheetBuf[:]), firefly.S(4, 4))
 }

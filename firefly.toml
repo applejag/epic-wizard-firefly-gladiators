@@ -19,4 +19,5 @@ racing-map-clouds = { path = "assets/race track sheet clouds.png" }
 racing-map-mask = { path = "assets/race track mask.png" }
 title-screen = { path = "assets/Title screen sheet.png" }
 title-button-hi = { path = "assets/Title button highlight.png" }
+title-no-continue = { path = "assets/Title no continue.png" }
 transition = { path = "assets/transition.png" }
