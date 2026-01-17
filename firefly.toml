@@ -12,4 +12,4 @@ lang = "go"
 firefly = { path = "assets/firefly-green-palettized.png" }
 firefly-rev = { path = "assets/firefly-green-palettized-reverse.png" }
 field = { path = "assets/field.png" }
-racing-map = { path = "assets/racing-map-placeholder.png" }
+racing-map = { path = "assets/race track sheet bg merged.png" }

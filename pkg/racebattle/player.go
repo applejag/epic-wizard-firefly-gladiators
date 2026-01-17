@@ -42,22 +42,24 @@ type Firefly struct {
 	SpeedFactor float32
 }
 
-func NewFireflyPlayer(peer firefly.Peer, pos util.Vec2) Firefly {
+func NewFireflyPlayer(peer firefly.Peer, pos util.Vec2, angle firefly.Angle) Firefly {
 	return Firefly{
 		IsPlayer:       true,
 		Peer:           peer,
 		SpriteSheet:    assets.FireflySheet.Animated(FireflyAnimationFPS),
 		SpriteSheetRev: assets.FireflySheetRev.Animated(FireflyAnimationFPS),
 		Pos:            pos,
+		Angle:          angle,
 	}
 }
 
-func NewFireflyAI(pos util.Vec2) Firefly {
+func NewFireflyAI(pos util.Vec2, angle firefly.Angle) Firefly {
 	return Firefly{
 		IsPlayer:       false,
 		SpriteSheet:    assets.FireflySheet.Animated(FireflyAnimationFPS),
 		SpriteSheetRev: assets.FireflySheetRev.Animated(FireflyAnimationFPS),
 		Pos:            pos,
+		Angle:          angle,
 	}
 }
 

@@ -23,7 +23,7 @@ func boot() {
 
 	world.Me = firefly.GetMe()
 	world.Players = []racebattle.Firefly{
-		racebattle.NewFireflyPlayer(world.Me, util.V(58, 315)),
+		racebattle.NewFireflyPlayer(world.Me, util.V(41, 390), firefly.Degrees(270)),
 	}
 }
 
