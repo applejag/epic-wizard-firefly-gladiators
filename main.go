@@ -2,8 +2,8 @@ package main
 
 import (
 	"firefly-jam-2026/assets"
+	"firefly-jam-2026/pkg/mainmenu"
 	"firefly-jam-2026/pkg/racebattle"
-	"firefly-jam-2026/pkg/util"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -18,20 +18,21 @@ var world = racebattle.World{
 	Camera: racebattle.Camera{},
 }
 
+var menu = mainmenu.Menu{}
+
 func boot() {
 	assets.Load()
 
-	world.AnimatedClouds = assets.RacingMapClouds.Animated(2)
-	world.Me = firefly.GetMe()
-	world.Players = []racebattle.Firefly{
-		racebattle.NewFireflyPlayer(world.Me, util.V(41, 390), firefly.Degrees(270)),
-	}
+	world.Boot()
+	menu.Boot()
 }
 
 func update() {
-	world.Update()
+	// world.Update()
+	menu.Update()
 }
 
 func render() {
-	world.Render()
+	// world.Render()
+	menu.Render()
 }

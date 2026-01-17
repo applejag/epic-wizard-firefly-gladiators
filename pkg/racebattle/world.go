@@ -42,6 +42,14 @@ type World struct {
 	// path Path
 }
 
+func (w *World) Boot() {
+	w.AnimatedClouds = assets.RacingMapClouds.Animated(2)
+	w.Me = firefly.GetMe()
+	w.Players = []Firefly{
+		NewFireflyPlayer(w.Me, util.V(41, 390), firefly.Degrees(270)),
+	}
+}
+
 func (w *World) Update() {
 	for i := range w.Players {
 		w.Players[i].Update()

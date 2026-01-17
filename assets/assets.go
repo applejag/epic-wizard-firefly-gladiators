@@ -23,10 +23,12 @@ var (
 	FireflySheet         util.SpriteSheet
 	fireflySheetRevBuf   [333]byte
 	FireflySheetRev      util.SpriteSheet
+	titleScreenBuf       [38413]byte
+	TitleScreen          util.SpriteSheet
 )
 
 func Load() {
-	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("racing-map-mask")))
+	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("title-screen")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	RacingMap = firefly.LoadImage("racing-map", racingMapBuf[:])
 	RacingMapTrees = firefly.LoadImage("racing-map-trees", racingMapTreesBuf[:])
@@ -35,4 +37,5 @@ func Load() {
 	RacingMapMask = util.NewExtImage(firefly.LoadFile("racing-map-mask", racingMapMaskBuf[:]))
 	FireflySheet = util.SplitImageByCount(firefly.LoadImage("firefly", fireflySheetBuf[:]), firefly.S(7, 1))
 	FireflySheetRev = util.SplitImageByCount(firefly.LoadImage("firefly-rev", fireflySheetRevBuf[:]), firefly.S(7, 1))
+	TitleScreen = util.SplitImageByCount(firefly.LoadImage("title-screen", titleScreenBuf[:]), firefly.S(2, 1))
 }
