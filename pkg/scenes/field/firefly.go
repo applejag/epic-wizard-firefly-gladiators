@@ -65,9 +65,12 @@ func (f *Firefly) Update() {
 }
 
 func (f *Firefly) Render() {
+	point := f.pos.Round().Point()
+	firefly.DrawCircle(point.Add(firefly.P(-2, 2)), 5, firefly.Solid(firefly.ColorDarkGray))
+
 	if f.nextPos.X > f.pos.X {
-		f.sprites.Draw(f.pos.Round().Point())
+		f.sprites.Draw(point.Sub(firefly.P(4, 5)))
 	} else {
-		f.spritesRev.Draw(f.pos.Round().Point())
+		f.spritesRev.Draw(point.Sub(firefly.P(4, 5)))
 	}
 }
