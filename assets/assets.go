@@ -2,6 +2,7 @@ package assets
 
 import (
 	"firefly-jam-2026/pkg/util"
+	"strconv"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -32,8 +33,10 @@ var (
 	titleNoContinueBuf      [423]byte
 	TitleNoContinue         firefly.Image
 
-	shopBuf [38413]byte
-	Shop    util.SpriteSheet
+	shopBuf        [19213]byte
+	Shop           firefly.Image
+	shopChatboxBuf [3073]byte
+	ShopChatbox    firefly.Image
 
 	transitionSheetBuf [134]byte
 	TransitionSheet    util.SpriteSheet
@@ -43,7 +46,7 @@ var (
 )
 
 func Load() {
-	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("eg_6x9")))
+	firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("shop-chatbox")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	RacingMap = firefly.LoadImage("racing-map", racingMapBuf[:])
 	RacingMapTrees = firefly.LoadImage("racing-map-trees", racingMapTreesBuf[:])
@@ -55,7 +58,8 @@ func Load() {
 	TitleScreen = util.SplitImageByCount(firefly.LoadImage("title-screen", titleScreenBuf[:]), firefly.S(2, 1))
 	TitleButtonHighlight = util.SplitImageByCount(firefly.LoadImage("title-button-hi", titleButtonHighlightBuf[:]), firefly.S(2, 1))
 	TitleNoContinue = firefly.LoadImage("title-no-continue", titleNoContinueBuf[:])
-	Shop = util.SplitImageByCount(firefly.LoadImage("shop", shopBuf[:]), firefly.S(1, 2))
+	Shop = firefly.LoadImage("shop", shopBuf[:])
+	ShopChatbox = firefly.LoadImage("shop-chatbox", shopChatboxBuf[:])
 	TransitionSheet = util.SplitImageByCount(firefly.LoadImage("transition", transitionSheetBuf[:]), firefly.S(4, 4))
 	FontEG_6x9 = firefly.LoadFont("eg_6x9", fontEG_6x9Buf[:])
 }
