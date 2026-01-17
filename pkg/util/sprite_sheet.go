@@ -36,6 +36,7 @@ func NewAnimatedSheet(sprites SpriteSheet, fps int) AnimatedSheet {
 	return AnimatedSheet{
 		sprites:       sprites,
 		ticksPerFrame: 60 / fps,
+		AutoPlay:      true,
 	}
 }
 
@@ -44,16 +45,40 @@ type AnimatedSheet struct {
 	index         int
 	time          int
 	ticksPerFrame int
+	AutoPlay      bool
 }
 
 func (s *AnimatedSheet) Update() {
+	if s.IsPaused() {
+		return
+	}
 	s.time++
 	if s.time >= s.ticksPerFrame {
+		before := s.index
 		s.index = (s.index + 1) % len(s.sprites)
 		s.time = 0
+		if !s.AutoPlay && before > s.index {
+			s.time = -1
+		}
 	}
 }
 
 func (s *AnimatedSheet) Draw(point firefly.Point) {
+	if s.IsPaused() {
+		return
+	}
 	s.sprites[s.index].Draw(point)
+}
+
+func (s *AnimatedSheet) Play() {
+	s.time = 0
+	s.index = 0
+}
+
+func (s *AnimatedSheet) Stop() {
+	s.time = -1
+}
+
+func (s *AnimatedSheet) IsPaused() bool {
+	return s.time == -1
 }
