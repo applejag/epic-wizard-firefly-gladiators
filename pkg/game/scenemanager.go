@@ -53,7 +53,10 @@ func (s *SceneManager) Boot() {
 	s.RaceBattle.Boot()
 	s.Shop.Boot()
 
-	s.Shop.Shop.AddItem(0, 1, assets.ShopItem[6])
+	s.Shop.Shop.AddFireflyItem(0, 1, assets.ShopItem[6])
+	s.Shop.Shop.AddFireflyItem(0, 5, assets.ShopItem[6])
+	s.Shop.Shop.AddFireflyItem(0, 10, assets.ShopItem[6])
+	s.Shop.Shop.AddFireflyItem(0, 100, assets.ShopItem[6])
 }
 
 func (s *SceneManager) Update() {

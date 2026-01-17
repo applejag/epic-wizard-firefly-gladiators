@@ -4,12 +4,14 @@ import (
 	"firefly-jam-2026/assets"
 	"firefly-jam-2026/pkg/util"
 	"fmt"
+	"slices"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
 
 type Shop struct {
-	dpad4Old firefly.DPad4
+	dpad4Old   firefly.DPad4
+	buttonsOld firefly.Buttons
 
 	Selected int
 	Items    []Item
@@ -28,20 +30,28 @@ func (s *Shop) Boot() {
 }
 
 func (s *Shop) Update() {
-	if pad, ok := firefly.ReadPad(firefly.GetMe()); ok {
+	me := firefly.GetMe()
+	if pad, ok := firefly.ReadPad(me); ok {
 		dpad4 := pad.DPad4()
 		justPressed := dpad4.JustPressed(s.dpad4Old)
 		if justPressed != firefly.DPad4None {
-			s.handleInput(justPressed)
+			s.handleInputDPad4(justPressed)
 		}
 		s.dpad4Old = dpad4
 	} else {
 		s.dpad4Old = firefly.DPad4None
 	}
+
+	buttons := firefly.ReadButtons(me)
+	if justPressed := buttons.JustPressed(s.buttonsOld); justPressed.Any() {
+		s.handleInputButtons(justPressed)
+	}
+	s.buttonsOld = buttons
+
 	s.selectedAnim.Update()
 }
 
-func (s *Shop) handleInput(justPressed firefly.DPad4) {
+func (s *Shop) handleInputDPad4(justPressed firefly.DPad4) {
 	switch justPressed {
 	case firefly.DPad4Right:
 		if s.Selected < len(s.Items)-1 {
@@ -58,6 +68,27 @@ func (s *Shop) handleInput(justPressed firefly.DPad4) {
 	}
 }
 
+func (s *Shop) handleInputButtons(justPressed firefly.Buttons) {
+	if justPressed.S && s.Selected >= 0 && s.Selected < len(s.Items) {
+		item := s.Items[s.Selected]
+		firefly.LogDebug("buy 1x: " + item.Kind.String())
+		switch item.Kind {
+		case ItemDrug:
+		case ItemFirefly:
+		case ItemHat:
+		case ItemSell:
+		default:
+			panic("unexpected shop.ItemKind")
+		}
+		if s.Items[s.Selected].Quantity > 0 {
+			s.Items[s.Selected].Quantity--
+			if s.Items[s.Selected].Quantity <= 0 {
+				s.Items = slices.Delete(s.Items, s.Selected, s.Selected+1)
+			}
+		}
+	}
+}
+
 func (s *Shop) Render() {
 	startPos := firefly.P(130, 28)
 	offset := firefly.S(27, 38)
@@ -65,9 +96,12 @@ func (s *Shop) Render() {
 		pos := startPos.Add(firefly.P((i%4)*offset.W, (i/4)*offset.H))
 		item.Bg.Draw(pos)
 		item.Icon.Draw(pos)
-		textWidth := len(item.priceStr) * assets.FontPico8_4x6.CharWidth()
 		if item.Quantity > 0 {
+			textWidth := len(item.priceStr) * assets.FontPico8_4x6.CharWidth()
 			assets.FontPico8_4x6.Draw(item.priceStr, pos.Add(firefly.P(offset.W/2-textWidth/2, offset.H-6)), firefly.ColorYellow)
+			quantityStr := fmt.Sprintf("x%d", item.Quantity)
+			quantityWidth := len(quantityStr) * assets.FontPico8_4x6.CharWidth()
+			assets.FontPico8_4x6.Draw(quantityStr, pos.Add(firefly.P(offset.W-quantityWidth-3, 7)), firefly.ColorDarkGray)
 		}
 		if s.Selected == i {
 			s.selectedAnim.Draw(pos)
@@ -77,6 +111,7 @@ func (s *Shop) Render() {
 
 func (s *Shop) AddDrugItem(price, quantity int, icon firefly.SubImage) {
 	s.Items = append(s.Items, Item{
+		Kind:     ItemDrug,
 		Price:    price,
 		priceStr: formatPrice(price),
 		Quantity: quantity,
@@ -85,8 +120,9 @@ func (s *Shop) AddDrugItem(price, quantity int, icon firefly.SubImage) {
 	})
 }
 
-func (s *Shop) AddItem(price, quantity int, icon firefly.SubImage) {
+func (s *Shop) AddFireflyItem(price, quantity int, icon firefly.SubImage) {
 	s.Items = append(s.Items, Item{
+		Kind:     ItemFirefly,
 		Price:    price,
 		priceStr: formatPrice(price),
 		Quantity: quantity,
@@ -97,6 +133,7 @@ func (s *Shop) AddItem(price, quantity int, icon firefly.SubImage) {
 
 func (s *Shop) AddSellItem() {
 	s.Items = append(s.Items, Item{
+		Kind:     ItemSell,
 		Price:    0,
 		Quantity: -1,
 		Bg:       s.sellBG,
@@ -112,9 +149,37 @@ func formatPrice(price int) string {
 }
 
 type Item struct {
+	Kind     ItemKind
 	Price    int
 	priceStr string
 	Quantity int
 	Icon     firefly.SubImage
 	Bg       firefly.SubImage
+}
+
+type ItemKind byte
+
+const (
+	ItemNone ItemKind = iota
+	ItemSell
+	ItemFirefly
+	ItemHat
+	ItemDrug
+)
+
+func (k ItemKind) String() string {
+	switch k {
+	case ItemDrug:
+		return "drug"
+	case ItemFirefly:
+		return "firefly"
+	case ItemHat:
+		return "hat"
+	case ItemNone:
+		return "none"
+	case ItemSell:
+		return "sell"
+	default:
+		panic("unexpected shop.ItemKind")
+	}
 }
