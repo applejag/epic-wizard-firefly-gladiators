@@ -26,6 +26,7 @@ shop-frog = { path = "assets/frog shop frog.png" }
 shop-props = { path = "assets/frog shop props.png" }
 shop-chatbox = { path = "assets/Frog_shop_mockup_chat.png" }
 shop-item = { path = "assets/Frog_shop_item.png" }
+exit = { path = "assets/exit.png" }
 
 eg_6x9 = { path = "assets/fonts/eg_6x9.fff" }
 pico8_4x6 = { path = "assets/fonts/pico8_4x6.fff" }

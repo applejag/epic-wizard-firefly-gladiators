@@ -25,4 +25,8 @@ on this repo.
 Made by: team applejuice
 
 - Code: [@applejag](https://github.com/applejag)
+
 - Art: [@JusJuice](https://github.com/JusJuice)
+
+- Firefly names: Brooks Bedore, Dane, Spark, Kalob,
+  and the cast of Titus Production's FROZEN

@@ -1,13 +1,22 @@
 package state
 
-var state GameState
+import (
+	"firefly-jam-2026/pkg/util"
+)
+
+var Game GameState
 
 type GameState struct {
 	Fireflies []Firefly
 }
 
-type Firefly struct {
-	Name Name
+func (g *GameState) AddFirefly() {
+	name := util.RandomName()
+	g.Fireflies = append(g.Fireflies, Firefly{
+		Name: name,
+	})
 }
 
-type Name [2]byte
+type Firefly struct {
+	Name util.Name
+}

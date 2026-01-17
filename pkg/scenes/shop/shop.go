@@ -2,6 +2,8 @@ package shop
 
 import (
 	"firefly-jam-2026/assets"
+	"firefly-jam-2026/pkg/scenes"
+	"firefly-jam-2026/pkg/state"
 	"firefly-jam-2026/pkg/util"
 	"fmt"
 	"slices"
@@ -75,6 +77,7 @@ func (s *Shop) handleInputButtons(justPressed firefly.Buttons) {
 		switch item.Kind {
 		case ItemDrug:
 		case ItemFirefly:
+			state.Game.AddFirefly()
 		case ItemHat:
 		case ItemSell:
 		default:
@@ -86,6 +89,9 @@ func (s *Shop) handleInputButtons(justPressed firefly.Buttons) {
 				s.Items = slices.Delete(s.Items, s.Selected, s.Selected+1)
 			}
 		}
+	}
+	if justPressed.E && len(state.Game.Fireflies) > 0 {
+		scenes.SwitchScene(scenes.Field)
 	}
 }
 
@@ -106,6 +112,9 @@ func (s *Shop) Render() {
 		if s.Selected == i {
 			s.selectedAnim.Draw(pos)
 		}
+	}
+	if len(state.Game.Fireflies) > 0 {
+		assets.Exit.Draw(firefly.P(firefly.Width-assets.Exit.Width()+4, 1))
 	}
 }
 

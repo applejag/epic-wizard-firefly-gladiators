@@ -2,6 +2,7 @@ package assets
 
 import (
 	"firefly-jam-2026/pkg/util"
+	"strconv"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -43,6 +44,9 @@ var (
 	shopItemBuf    [6061]byte
 	ShopItem       util.SpriteSheet
 
+	exitBuf [95]byte
+	Exit    firefly.Image
+
 	transitionSheetBuf [134]byte
 	TransitionSheet    util.SpriteSheet
 
@@ -53,7 +57,7 @@ var (
 )
 
 func Load() {
-	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("pico8_4x6")))
+	firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("exit")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	RacingMap = firefly.LoadImage("racing-map", racingMapBuf[:])
 	RacingMapTrees = firefly.LoadImage("racing-map-trees", racingMapTreesBuf[:])
@@ -71,6 +75,7 @@ func Load() {
 	ShopChatbox = firefly.LoadImage("shop-chatbox", shopChatboxBuf[:])
 	ShopItem = util.SplitImageByCount(firefly.LoadImage("shop-item", shopItemBuf[:]), firefly.S(4, 3))
 	TransitionSheet = util.SplitImageByCount(firefly.LoadImage("transition", transitionSheetBuf[:]), firefly.S(4, 4))
+	Exit = firefly.LoadImage("exit", exitBuf[:])
 	FontEG_6x9 = firefly.LoadFont("eg_6x9", fontEG_6x9Buf[:])
 	FontPico8_4x6 = firefly.LoadFont("pico8_4x6", fontPico8_4x6Buf[:])
 }
