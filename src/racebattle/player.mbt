@@ -56,27 +56,34 @@ pub fn Firefly::update(self : Firefly) -> Unit {
   self.sprite_sheet.update()
   self.sprite_sheet_rev.update()
   if self.peer is Some(peer) {
-    self.update_input(peer)
+    self.update_input_peer(peer)
   }
   let dir = Vec2::from_angle(self.angle).scale(MOVE_MAX_SPEED)
   self.pos = self.pos + dir.scale(MOVE_MAX_SPEED * self.speed_factor)
 }
 
 ///|
-pub fn Firefly::update_input(self : Firefly, peer : @firefly.Peer) -> Unit {
+pub fn Firefly::update_input_peer(self : Firefly, peer : @firefly.Peer) -> Unit {
   let pad_maybe = @firefly.read_pad(peer~)
   guard pad_maybe is Some(pad) else {
-    self.speed_factor = @util.move_towards(
-      self.speed_factor,
-      0,
-      MOVE_DEACCELERATION,
-    )
+    self.update_speed_factor(0)
     return
   }
   let radius_percentage = pad.radius() / 1000.0
   // multiply by 1.2 and clamp so that there's some threshold to where
   // top speed is on the input
   let target_speed_factor = @cmp.minimum(radius_percentage * 1.2, 1.0)
+  self.update_speed_factor(target_speed_factor)
+  if pad.x != 0 && pad.y != 0 {
+    self.update_angle(pad.azimuth())
+  }
+}
+
+///|
+fn Firefly::update_speed_factor(
+  self : Firefly,
+  target_speed_factor : Float,
+) -> Unit {
   if target_speed_factor > self.speed_factor {
     self.speed_factor = @util.move_towards(
       self.speed_factor,
@@ -90,19 +97,21 @@ pub fn Firefly::update_input(self : Firefly, peer : @firefly.Peer) -> Unit {
       MOVE_DEACCELERATION,
     )
   }
-  if pad.x != 0 && pad.y != 0 {
-    let rotation_speed = @util.lerp(
-      rotation_speed_when_still.to_rad(),
-      rotation_speed_when_moving.to_rad(),
-      self.speed_factor,
-    )
-    let new_angle = @util.rotate_toward(
-      self.angle,
-      pad.azimuth(),
-      Angle::from_rad(rotation_speed),
-    )
-    self.angle = new_angle
-  }
+}
+
+///|
+fn Firefly::update_angle(self : Firefly, target_angle : Angle) -> Unit {
+  let rotation_speed = @util.lerp(
+    rotation_speed_when_still.to_rad(),
+    rotation_speed_when_moving.to_rad(),
+    self.speed_factor,
+  )
+  let new_angle = @util.rotate_toward(
+    self.angle,
+    target_angle,
+    Angle::from_rad(rotation_speed),
+  )
+  self.angle = new_angle
 }
 
 ///|
