@@ -48,6 +48,11 @@ type AnimatedSheet struct {
 	AutoPlay      bool
 }
 
+func (s *AnimatedSheet) SetFrame(frame int) {
+	s.index = Clamp(frame, 0, len(s.sprites)-1)
+	s.time = 0
+}
+
 func (s *AnimatedSheet) Update() {
 	if s.IsPaused() {
 		return

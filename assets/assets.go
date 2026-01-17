@@ -2,7 +2,6 @@ package assets
 
 import (
 	"firefly-jam-2026/pkg/util"
-	"strconv"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -57,7 +56,7 @@ var (
 )
 
 func Load() {
-	firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("exit")))
+	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("exit")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	RacingMap = firefly.LoadImage("racing-map", racingMapBuf[:])
 	RacingMapTrees = firefly.LoadImage("racing-map-trees", racingMapTreesBuf[:])

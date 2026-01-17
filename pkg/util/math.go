@@ -58,3 +58,7 @@ func MoveTowards(start, end, delta float32) float32 {
 func Lerp(from, to, weight float32) float32 {
 	return from + (to-from)*weight
 }
+
+func RandomRange(start, end int) int {
+	return start + int(firefly.GetRandom()%uint32(end-start))
+}

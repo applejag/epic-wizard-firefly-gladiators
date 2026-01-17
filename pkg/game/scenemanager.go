@@ -28,16 +28,25 @@ type SceneManager struct {
 
 // SwitchScene implements [scenes.SceneSwitcher].
 func (s *SceneManager) SwitchScene(scene scenes.Scene) {
+	if s.currentScene == scene || s.nextScene == scene {
+		return
+	}
 	s.nextScene = scene
 	s.Transition.Play()
-	firefly.LogDebug(fmt.Sprintf("switching scene to %q", scene))
+	firefly.LogDebug(fmt.Sprintf("switching scene from %q to %q", s.currentScene, scene))
+	s.onSceneSwitch(scene)
 }
 
 func (s *SceneManager) SwitchSceneNoTransition(scene scenes.Scene) {
+	if s.currentScene == scene {
+		return
+	}
+	prev := s.currentScene
 	s.nextScene = scene
 	s.currentScene = scene
 	s.Transition.Stop()
-	firefly.LogDebug(fmt.Sprintf("switching scene to %q (without transition)", scene))
+	firefly.LogDebug(fmt.Sprintf("switching scene from %q to %q (without transition)", prev, scene))
+	s.onSceneSwitch(scene)
 }
 
 func (s *SceneManager) Boot() {
@@ -72,7 +81,7 @@ func (s *SceneManager) Update() {
 		}
 	}
 	s.Transition.Update()
-	if s.Transition.IsPaused() {
+	if s.currentScene != s.nextScene && s.Transition.IsPaused() {
 		s.currentScene = s.nextScene
 	}
 }
@@ -95,4 +104,11 @@ func (s *SceneManager) Render() {
 		s.Shop.Render()
 	}
 	s.Transition.Draw()
+}
+
+func (s *SceneManager) onSceneSwitch(scene scenes.Scene) {
+	switch scene {
+	case scenes.Field:
+		s.Field.OnSceneSwitch()
+	}
 }
