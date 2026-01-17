@@ -10,4 +10,5 @@ lang = "moon"
 
 [files]
 firefly = { path = "assets/firefly-green-palettized.png" }
+firefly-rev = { path = "assets/firefly-green-palettized-reverse.png" }
 field = { path = "assets/field.png" }

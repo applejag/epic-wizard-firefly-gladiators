@@ -9,8 +9,6 @@ SPDX-License-Identifier: CC0-1.0
 
 Theme: firefly
 
-
-
 firefly farmer
 
 - breed new types of fireflies
@@ -140,12 +138,17 @@ firefly farmer
     - dodging
     
     - jousting
+
 - AI competition
+
 - Ranked games
+  
   - rise up in the ranks
   - ELO
   - fireflies can level up/rank up
+
 - naming fireflies
+  
   - chose name like Helldivers 2 space ship naming
   - super edgy
     - "Destroyer of Worlds"
@@ -153,7 +156,9 @@ firefly farmer
     - god names (Kratos)
     - Lord
   - recruit writers to come up with name segments
+
 - name of game
+  
   - firefly ranch
     - collides with thing in idaho
   - edgy x cute name
@@ -162,9 +167,8 @@ firefly farmer
     - firefly fighters
     - EWFG: Epic Wizard Firefly Gladiators
     - Throwdown
+
 - Team applejuice
-
-
 
 ## Game loop
 

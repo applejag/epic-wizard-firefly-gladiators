@@ -22,6 +22,7 @@ pub fn boot() -> Unit {
     players: [
       @racebattle.Player::new(
         assets.firefly_sheet,
+        assets.firefly_rev_sheet,
         Some(@firefly.get_me()),
         pos=Vec2::new(80, 40),
       ),
