@@ -10,7 +10,7 @@ import (
 type Menu struct {
 	TitleScreen     util.AnimatedSheet
 	ButtonHighlight util.AnimatedSheet
-	Transition      Transition
+	Transition      util.Transition
 	Button          Button
 	lastInput       firefly.Pad
 }
@@ -37,7 +37,7 @@ func (b Button) HighlightPosition() (firefly.Point, bool) {
 func (m *Menu) Boot() {
 	m.TitleScreen = assets.TitleScreen.Animated(2)
 	m.ButtonHighlight = assets.TitleButtonHighlight.Animated(2)
-	m.Transition = NewTransition(assets.TransitionSheet.Animated(10))
+	m.Transition = util.NewTransition(assets.TransitionSheet.Animated(10), firefly.S(8, 8))
 }
 
 func (m *Menu) Update() {
