@@ -22,8 +22,10 @@ const (
 // Based on the Godot `angle_difference` (licensed under MIT):
 // https://github.com/godotengine/godot/blob/50277787eacaf4bc4d8683a706fe54dc65762020/core/math/math_funcs.h#L482-L489
 func AngleDifference(from, to firefly.Angle) firefly.Angle {
-	diff := tinymath.RemEuclid(to.Radians()-from.Radians(), Tau)
-	return firefly.Radians(tinymath.RemEuclid(2*diff, Tau) - diff)
+	// tinymath has "RemEuclid" https://github.com/orsinium-labs/tinymath/blob/de812093edff2384fd94a922c5b255b0e39139a6/tinymath.go#L320-L328
+	// but it has some math bugs, so we have to resort to the big math functions.
+	diff := math.Mod(float64(to.Radians()-from.Radians()), Tau)
+	return firefly.Radians(float32(math.Mod(2*diff, Tau) - diff))
 }
 
 func RotateTowards(from, to, delta firefly.Angle) firefly.Angle {
