@@ -15,7 +15,7 @@ var (
 	RacingMapTrees       firefly.Image
 	racingMapTreetopsBuf [192013]byte
 	RacingMapTreetops    firefly.Image
-	racingMapCloudsBuf   [384013]byte
+	racingMapCloudsBuf   [32207]byte
 	RacingMapClouds      util.SpriteSheet
 	racingMapMaskBuf     [96007]byte
 	RacingMapMask        util.ExtImage
