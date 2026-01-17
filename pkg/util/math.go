@@ -8,7 +8,11 @@ import (
 	"github.com/orsinium-labs/tinymath"
 )
 
-const Tau = math.Pi * 2
+const (
+	Tau      = math.Pi * 2
+	RadToDeg = 360 / Tau
+	DegToRad = Tau / 360
+)
 
 // Returns the difference between the two angles, in the range of `[-PI, +PI]`.
 // When `self` and `to` are opposite,

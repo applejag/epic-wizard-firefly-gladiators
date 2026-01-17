@@ -1,6 +1,12 @@
 package main
 
-import "github.com/firefly-zero/firefly-go/firefly"
+import (
+	"firefly-jam-2026/assets"
+	"firefly-jam-2026/pkg/racebattle"
+	"firefly-jam-2026/pkg/util"
+
+	"github.com/firefly-zero/firefly-go/firefly"
+)
 
 func init() {
 	firefly.Boot = boot
@@ -8,24 +14,23 @@ func init() {
 	firefly.Render = render
 }
 
+var world = racebattle.World{
+	Camera: racebattle.Camera{},
+}
+
 func boot() {
-	// ...
+	assets.Load()
+
+	world.Me = firefly.GetMe()
+	world.Players = []racebattle.Firefly{
+		racebattle.NewFireflyPlayer(world.Me, util.V(58, 315)),
+	}
 }
 
 func update() {
-	// ...
+	world.Update()
 }
 
 func render() {
-	firefly.ClearScreen(firefly.ColorWhite)
-	firefly.DrawTriangle(
-		firefly.Point{X: 60, Y: 10},
-		firefly.Point{X: 40, Y: 40},
-		firefly.Point{X: 80, Y: 40},
-		firefly.Style{
-			FillColor:   firefly.ColorDarkBlue,
-			StrokeColor: firefly.ColorBlue,
-			StrokeWidth: 1,
-		},
-	)
+	world.Render()
 }
