@@ -20,7 +20,7 @@ pub fn boot() -> Unit {
   racebattle_world.val = @racebattle.World::{
     field_img: assets.field,
     players: [
-      @racebattle.Player::new(
+      @racebattle.Firefly::new(
         assets.firefly_sheet,
         assets.firefly_rev_sheet,
         Some(@firefly.get_me()),

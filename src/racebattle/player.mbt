@@ -22,7 +22,7 @@ const MOVE_ACCELERATION : Float = 0.00370370370 // 0%-100% in 1/270th, i.e in 4.
 const MOVE_DEACCELERATION : Float = 0.016666666 // 100%-0% in 1/60th, i.e in 1sec
 
 ///|
-pub struct Player {
+pub struct Firefly {
   // manually doing "struct of arrays" optimization,
   // mostly as an experiment to see how tedious it is,
   // but also because MoonBit doesn't allow "#valtype"s in other "#valtype"s
@@ -35,13 +35,13 @@ pub struct Player {
 }
 
 ///|
-pub fn Player::new(
+pub fn Firefly::new(
   sprite_sheet : @util.SpriteSheet,
   sprite_sheet_rev : @util.SpriteSheet,
   peer : @firefly.Peer?,
   pos? : Vec2 = Vec2::default(),
-) -> Player {
-  Player::{
+) -> Firefly {
+  Firefly::{
     sprite_sheet,
     sprite_sheet_rev,
     peer,
@@ -52,7 +52,7 @@ pub fn Player::new(
 }
 
 ///|
-pub fn Player::update(self : Player) -> Unit {
+pub fn Firefly::update(self : Firefly) -> Unit {
   self.sprite_sheet.update()
   self.sprite_sheet_rev.update()
   if self.peer is Some(peer) {
@@ -63,7 +63,7 @@ pub fn Player::update(self : Player) -> Unit {
 }
 
 ///|
-pub fn Player::update_input(self : Player, peer : @firefly.Peer) -> Unit {
+pub fn Firefly::update_input(self : Firefly, peer : @firefly.Peer) -> Unit {
   let pad_maybe = @firefly.read_pad(peer~)
   guard pad_maybe is Some(pad) else {
     self.speed_factor = @util.move_towards(
@@ -106,7 +106,7 @@ pub fn Player::update_input(self : Player, peer : @firefly.Peer) -> Unit {
 }
 
 ///|
-pub fn Player::render(self : Player, world : World) -> Unit {
+pub fn Firefly::render(self : Firefly, world : World) -> Unit {
   let point = world.camera.world_vec2_to_camera_space(self.pos)
   // draw shadow
   @firefly.draw_circle(

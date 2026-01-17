@@ -1,7 +1,7 @@
 ///|
 pub(all) struct World {
   field_img : @firefly.Image
-  players : FixedArray[Player]
+  players : FixedArray[Firefly]
   camera : Camera
   me : @firefly.Peer
 } derive(Default)
@@ -24,7 +24,7 @@ pub fn World::render(self : World) -> Unit {
   )
   self.field_img.draw(self.camera.world_point_to_camera_space(Point::new(0, 0)))
   // players
-  let mut me : Player? = None
+  let mut me : Firefly? = None
   for player in self.players {
     if player.peer == Some(self.me) {
       me = Some(player)
