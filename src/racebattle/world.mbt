@@ -6,7 +6,7 @@ pub(all) struct World {
   camera : Camera
   me : @firefly.Peer
   path : Path
-} derive(Default)
+}
 
 ///|
 pub fn World::update(self : World) -> Unit {
