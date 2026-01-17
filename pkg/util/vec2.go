@@ -52,3 +52,11 @@ func (v Vec2) Negate() Vec2 {
 func (v Vec2) Scale(factor float32) Vec2 {
 	return Vec2{X: v.X * factor, Y: v.Y * factor}
 }
+
+func (v Vec2) Radius() float32 {
+	return tinymath.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func (v Vec2) RadiusSquared() float32 {
+	return v.X*v.X + v.Y*v.Y
+}

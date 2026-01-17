@@ -31,8 +31,9 @@ const (
 )
 
 type Firefly struct {
-	IsPlayer bool
-	Peer     firefly.Peer
+	IsPlayer    bool
+	Peer        firefly.Peer
+	PathTracker PathTracker
 
 	SpriteSheet    util.AnimatedSheet
 	SpriteSheetRev util.AnimatedSheet
@@ -46,6 +47,7 @@ func NewFireflyPlayer(peer firefly.Peer, pos util.Vec2, angle firefly.Angle) Fir
 	return Firefly{
 		IsPlayer:       true,
 		Peer:           peer,
+		PathTracker:    NewPathTracker(path),
 		SpriteSheet:    assets.FireflySheet.Animated(FireflyAnimationFPS),
 		SpriteSheetRev: assets.FireflySheetRev.Animated(FireflyAnimationFPS),
 		Pos:            pos,
@@ -56,6 +58,7 @@ func NewFireflyPlayer(peer firefly.Peer, pos util.Vec2, angle firefly.Angle) Fir
 func NewFireflyAI(pos util.Vec2, angle firefly.Angle) Firefly {
 	return Firefly{
 		IsPlayer:       false,
+		PathTracker:    NewPathTracker(path),
 		SpriteSheet:    assets.FireflySheet.Animated(FireflyAnimationFPS),
 		SpriteSheetRev: assets.FireflySheetRev.Animated(FireflyAnimationFPS),
 		Pos:            pos,
@@ -71,6 +74,7 @@ func (f *Firefly) Update() {
 	}
 	dir := util.AngleToVec2(f.Angle)
 	f.Pos = f.Pos.Add(dir.Scale(MoveMaxSpeed * f.SpeedFactor))
+	f.PathTracker.Update(f.Pos)
 }
 
 func (f *Firefly) UpdatePlayerInput() {
@@ -106,6 +110,11 @@ func (f *Firefly) Draw(world *World) {
 	point := world.Camera.WorldVec2ToCameraSpace(f.Pos)
 	// Draw shadow
 	firefly.DrawCircle(point.Add(firefly.P(-2, 2)), 5, firefly.Solid(firefly.ColorDarkGray))
+	// Draw line to next path checkpoint
+	firefly.DrawLine(
+		point,
+		world.Camera.WorldVec2ToCameraSpace(f.PathTracker.PeekCurrent()),
+		firefly.L(firefly.ColorRed, 1))
 	// Draw arrow of movement direction
 	dir := util.AngleToVec2(f.Angle)
 	firefly.DrawLine(
