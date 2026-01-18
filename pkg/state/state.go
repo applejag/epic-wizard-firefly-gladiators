@@ -62,7 +62,7 @@ func (g *GameState) RemoveMyFireflyFromRaceBattle() {
 }
 
 func (g *GameState) Save() {
-	state := gamev1.GameState{
+	state := gamev1.Save{
 		Fireflies: make([]*gamev1.Firefly, len(g.Fireflies)),
 	}
 	for i, f := range g.Fireflies {

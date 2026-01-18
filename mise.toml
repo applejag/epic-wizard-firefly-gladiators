@@ -12,7 +12,7 @@ protoc-gen-go = "1.36.11"
 description = "Install protoc plugins"
 run = "go install tool"
 
-[tasks.generate]
+[tasks."build:generate"]
 # using https://github.com/aperturerobotics/protobuf-go-lite
 description = "Generate protobuf files"
 run = """
@@ -30,7 +30,7 @@ depends = ['install:tools']
 [tasks.build]
 description = "Build the game using firefly CLI"
 run = "ff build"
-depends = ['generate']
+depends = ['build:generate']
 
 [tasks.start]
 description = "Run the game using firefly emulator"

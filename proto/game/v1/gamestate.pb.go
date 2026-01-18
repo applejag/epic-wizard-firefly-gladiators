@@ -10,18 +10,18 @@ import (
 	io "io"
 )
 
-type GameState struct {
+type Save struct {
 	unknownFields []byte
 	Fireflies     []*Firefly `protobuf:"bytes,1,rep,name=fireflies,proto3" json:"fireflies,omitempty"`
 }
 
-func (x *GameState) Reset() {
-	*x = GameState{}
+func (x *Save) Reset() {
+	*x = Save{}
 }
 
-func (*GameState) ProtoMessage() {}
+func (*Save) ProtoMessage() {}
 
-func (x *GameState) GetFireflies() []*Firefly {
+func (x *Save) GetFireflies() []*Firefly {
 	if x != nil {
 		return x.Fireflies
 	}
@@ -70,7 +70,7 @@ func (x *Firefly) GetNimbleness() int32 {
 	return 0
 }
 
-func (m *GameState) MarshalVT() (dAtA []byte, err error) {
+func (m *Save) MarshalVT() (dAtA []byte, err error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -83,12 +83,12 @@ func (m *GameState) MarshalVT() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *GameState) MarshalToVT(dAtA []byte) (int, error) {
+func (m *Save) MarshalToVT(dAtA []byte) (int, error) {
 	size := m.SizeVT()
 	return m.MarshalToSizedBufferVT(dAtA[:size])
 }
 
-func (m *GameState) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+func (m *Save) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	if m == nil {
 		return 0, nil
 	}
@@ -168,7 +168,7 @@ func (m *Firefly) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *GameState) SizeVT() (n int) {
+func (m *Save) SizeVT() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -206,7 +206,7 @@ func (m *Firefly) SizeVT() (n int) {
 	return n
 }
 
-func (m *GameState) UnmarshalVT(dAtA []byte) error {
+func (m *Save) UnmarshalVT(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -229,10 +229,10 @@ func (m *GameState) UnmarshalVT(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: GameState: wiretype end group for non-group")
+			return fmt.Errorf("proto: Save: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: GameState: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Save: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
