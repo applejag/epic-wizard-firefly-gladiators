@@ -33,6 +33,10 @@ var (
 	RacingMapMask        util.ExtImage
 	racingPlaceBuf       [1465]byte
 	RacingPlace          util.SpriteSheet
+	victorySplashBuf     [86407]byte
+	VictorySplash        util.SpriteSheet
+	defeatSplashBuf      [86407]byte
+	DefeatSplash         util.SpriteSheet
 	fireflySheetBuf      [333]byte
 	FireflySheet         util.SpriteSheet
 	fireflySheetRevBuf   [333]byte
@@ -72,7 +76,7 @@ var (
 )
 
 func Load() {
-	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("racing-place")))
+	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("victory-splash")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	FireflyHighlight = util.SplitImageBySize(firefly.LoadImage("firefly-hi", fireflyHighlightBuf[:]), firefly.S(32, 32))
 	ScrollClose = util.SplitImageByCount(firefly.LoadImage("scroll", scrollBuf[:]), firefly.S(4, 1))
@@ -86,6 +90,8 @@ func Load() {
 	RacingMapClouds = util.SplitImageByCount(firefly.LoadImage("racing-map-clouds", racingMapCloudsBuf[:]), firefly.S(2, 1))
 	RacingMapMask = util.NewExtImage(firefly.LoadFile("racing-map-mask", racingMapMaskBuf[:]))
 	RacingPlace = util.SplitImageBySize(firefly.LoadImage("racing-place", racingPlaceBuf[:]), firefly.S(28, 33))
+	VictorySplash = util.SplitImageByCount(firefly.LoadImage("victory-splash", victorySplashBuf[:]), firefly.S(3, 3))
+	DefeatSplash = util.SplitImageByCount(firefly.LoadImage("defeat-splash", defeatSplashBuf[:]), firefly.S(3, 3))
 	FireflySheet = util.SplitImageByCount(firefly.LoadImage("firefly", fireflySheetBuf[:]), firefly.S(7, 1))
 	FireflySheetRev = util.SplitImageByCount(firefly.LoadImage("firefly-rev", fireflySheetRevBuf[:]), firefly.S(7, 1))
 	TitleScreen = util.SplitImageByCount(firefly.LoadImage("title-screen", titleScreenBuf[:]), firefly.S(2, 1))

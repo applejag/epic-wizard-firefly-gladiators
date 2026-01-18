@@ -17,7 +17,6 @@ var path = Path{
 	util.V(428, 575),
 	util.V(438, 541),
 	util.V(434, 513),
-	util.V(431, 516),
 	util.V(405, 456),
 	util.V(420, 415),
 	util.V(465, 410),
@@ -54,6 +53,7 @@ var path = Path{
 	util.V(75, 350),
 	util.V(41, 361),
 	util.V(36, 380),
+	util.V(40, 405),
 }
 
 type Path []util.Vec2
@@ -128,15 +128,17 @@ func (p *PathTracker) Progress(pos util.Vec2) float32 {
 
 func (p *PathTracker) Update(pos util.Vec2) PathTrackerResult {
 	curr := p.PeekCurrent()
-	distSquaredToCurr := curr.Sub(pos).RadiusSquared()
-	if distSquaredToCurr >= PathToCurrentThresholdSquared {
-		return PathTrackerKeepCurrent
-	}
 	prev := p.PeekPrevious()
-	distSquaredToPrev := pos.Sub(prev).RadiusSquared()
-	distSquaredBetweenPoints := curr.Sub(prev).RadiusSquared()
-	if distSquaredToPrev < distSquaredBetweenPoints {
+	distSqToCurr := curr.Sub(pos).RadiusSquared()
+	distSqToPrev := pos.Sub(prev).RadiusSquared()
+	distSqBetweenPoints := curr.Sub(prev).RadiusSquared()
+	switch {
+	case distSqToPrev < distSqBetweenPoints:
+		// haven't gotten far enough away from previous point
 		return PathTrackerKeepCurrent
+	case distSqToPrev < distSqToCurr:
+		// moving backwards
+		return PathTrackerMovingBackwards
 	}
 	p.goNext()
 	if p.index == 0 {
@@ -149,6 +151,7 @@ type PathTrackerResult byte
 
 const (
 	PathTrackerKeepCurrent PathTrackerResult = iota
+	PathTrackerMovingBackwards
 	PathTrackerNextCheckpoint
 	PathTrackerLooped
 )

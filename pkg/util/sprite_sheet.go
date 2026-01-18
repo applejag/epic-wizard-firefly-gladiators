@@ -75,6 +75,14 @@ func (s *AnimatedSheet) Draw(point firefly.Point) {
 	s.sprites[s.index].Draw(point)
 }
 
+func (s *AnimatedSheet) DrawOrLastFrame(point firefly.Point) {
+	if s.IsPaused() {
+		s.sprites[len(s.sprites)-1].Draw(point)
+	} else {
+		s.Draw(point)
+	}
+}
+
 func (s *AnimatedSheet) Play() {
 	s.time = 0
 	s.index = 0

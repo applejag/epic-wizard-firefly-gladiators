@@ -22,6 +22,8 @@ racing-map-treetops = { path = "assets/race track sheet trees top.png" }
 racing-map-clouds = { path = "assets/race track sheet clouds.png" }
 racing-map-mask = { path = "assets/race track mask.png" }
 racing-place = { path = "assets/place designator cropped.png" }
+victory-splash = { path = "assets/victory splash cropped.png" }
+defeat-splash = { path = "assets/defeat splash cropped.png" }
 title-screen = { path = "assets/Title screen sheet.png" }
 title-button-hi = { path = "assets/Title button highlight.png" }
 title-no-continue = { path = "assets/Title no continue.png" }

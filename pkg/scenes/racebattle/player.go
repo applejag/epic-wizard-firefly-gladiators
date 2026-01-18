@@ -72,7 +72,7 @@ func NewFireflyBot(pos util.Vec2, angle firefly.Angle) Firefly {
 	}
 }
 
-func (f *Firefly) Update() {
+func (f *Firefly) Update() PathTrackerResult {
 	f.SpriteSheet.Update()
 	f.SpriteSheetRev.Update()
 	if f.IsPlayer {
@@ -83,10 +83,12 @@ func (f *Firefly) Update() {
 	dir := util.AngleToVec2(f.Angle)
 	newPos := f.Pos.Add(dir.Scale(MoveMaxSpeed * f.SpeedFactor))
 	f.Move(newPos)
-	if f.PathTracker.Update(f.Pos) == PathTrackerLooped {
-		// loop!
+	trackerResult := f.PathTracker.Update(f.Pos)
+	if trackerResult == PathTrackerLooped {
+		// loop loop!
 		f.LoopsDone++
 	}
+	return trackerResult
 }
 
 func (f *Firefly) Move(to util.Vec2) {
@@ -175,6 +177,12 @@ func (f *Firefly) Render(scene *Scene) {
 			targetAngle,
 			7,
 			firefly.L(firefly.ColorDarkGreen, 1))
+
+		firefly.DrawLine(
+			point,
+			scene.Camera.WorldVec2ToCameraSpace(f.PathTracker.PeekCurrent()),
+			firefly.L(firefly.ColorBlue, 1),
+		)
 	}
 	// Draw sprite
 	isLookingLeft := tinymath.Abs(util.AngleDifference(firefly.Radians(math.Pi), f.Angle).Radians()) < math.Pi/2

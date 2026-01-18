@@ -11,10 +11,23 @@ import (
 	"github.com/firefly-zero/firefly-go/firefly"
 )
 
+type GameStatus byte
+
+const (
+	GameStarting GameStatus = iota
+	GamePlaying
+	GameOverDefeat
+	GameOverVictory
+)
+
 type Scene struct {
 	AnimatedClouds util.AnimatedSheet
-	Players        []Firefly
-	Camera         Camera
+	VictorySplash  util.AnimatedSheet
+	DefeatSplash   util.AnimatedSheet
+
+	Players []Firefly
+	Camera  Camera
+	Status  GameStatus
 
 	// Placement among all competitors.
 	//
@@ -26,21 +39,50 @@ type Scene struct {
 
 func (s *Scene) Boot() {
 	s.AnimatedClouds = assets.RacingMapClouds.Animated(2)
+	s.VictorySplash = assets.VictorySplash.Animated(6)
+	s.VictorySplash.AutoPlay = false
+	s.DefeatSplash.Stop()
+	s.DefeatSplash = assets.DefeatSplash.Animated(6)
+	s.DefeatSplash.AutoPlay = false
+	s.DefeatSplash.Stop()
+	s.Status = GameStarting
 }
 
 func (s *Scene) Update() {
-	for i := range s.Players {
-		s.Players[i].Update()
-	}
-	s.nudgeFirefliesAwayFromEachOther()
-	s.updateMyPlayerPlace()
-	// Sort by Y-axis so that they're drawn in the right order
-	slices.SortFunc(s.Players, func(a, b Firefly) int {
-		return cmp.Compare(a.Pos.Y, b.Pos.Y)
-	})
+	switch s.Status {
+	case GamePlaying:
+		for i := range s.Players {
+			result := s.Players[i].Update()
+			if result == PathTrackerLooped {
+				isMyPlayer := s.Players[i].IsPlayer && s.Players[i].Peer == state.Input.Me
+				if isMyPlayer {
+					s.Status = GameOverVictory
+					s.VictorySplash.Play()
+				} else {
+					s.Status = GameOverDefeat
+					s.DefeatSplash.Play()
+				}
+			}
+		}
+		s.nudgeFirefliesAwayFromEachOther()
+		s.updateMyPlayerPlace()
+		// Sort by Y-axis so that they're drawn in the right order
+		slices.SortFunc(s.Players, func(a, b Firefly) int {
+			return cmp.Compare(a.Pos.Y, b.Pos.Y)
+		})
 
-	s.Camera.Update(s)
-	s.AnimatedClouds.Update()
+		s.Camera.Update(s)
+		s.AnimatedClouds.Update()
+
+	case GameStarting:
+		// TODO: we should start in "GameStarting", and do a countdown
+		s.Status = GamePlaying
+
+	case GameOverVictory:
+		s.VictorySplash.Update()
+	case GameOverDefeat:
+		s.DefeatSplash.Update()
+	}
 }
 
 func (s *Scene) nudgeFirefliesAwayFromEachOther() {
@@ -96,8 +138,16 @@ func (s *Scene) Render() {
 	assets.RacingMapTreetops.Draw(mapPos)
 	s.AnimatedClouds.Draw(mapPos)
 
-	if s.myPlayerPlace >= 1 && s.myPlayerPlace <= 3 {
-		assets.RacingPlace[s.myPlayerPlace-1].Draw(firefly.P(firefly.Width-28-4, 4))
+	switch s.Status {
+	case GamePlaying:
+		if s.myPlayerPlace >= 1 && s.myPlayerPlace <= 3 {
+			assets.RacingPlace[s.myPlayerPlace-1].Draw(firefly.P(firefly.Width-28-4, 4))
+		}
+
+	case GameOverVictory:
+		s.VictorySplash.DrawOrLastFrame(firefly.P(0, 0))
+	case GameOverDefeat:
+		s.DefeatSplash.DrawOrLastFrame(firefly.P(0, 0))
 	}
 }
 
@@ -110,7 +160,12 @@ func (s *Scene) OnSceneEnter() {
 	if len(s.Players) < 2 {
 		s.Players = append(s.Players, NewFireflyBot(util.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))
 	}
+	// Update once so it focuses on player when we're transitioning to this scene
 	s.Camera.Update(s)
+
+	s.VictorySplash.Stop()
+	s.DefeatSplash.Stop()
+	s.Status = GameStarting
 }
 
 func offsetForPlayer(index int) util.Vec2 {
