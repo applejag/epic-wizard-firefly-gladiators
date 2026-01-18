@@ -1,4 +1,4 @@
-module firefly-jam-2026
+module github.com/applejag/firefly-jam-2026
 
 go 1.25.5
 

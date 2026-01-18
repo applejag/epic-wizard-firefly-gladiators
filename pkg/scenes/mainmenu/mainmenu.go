@@ -1,10 +1,10 @@
 package mainmenu
 
 import (
-	"firefly-jam-2026/assets"
-	"firefly-jam-2026/pkg/scenes"
-	"firefly-jam-2026/pkg/state"
-	"firefly-jam-2026/pkg/util"
+	"github.com/applejag/firefly-jam-2026/assets"
+	"github.com/applejag/firefly-jam-2026/pkg/scenes"
+	"github.com/applejag/firefly-jam-2026/pkg/state"
+	"github.com/applejag/firefly-jam-2026/pkg/util"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )

@@ -1,7 +1,7 @@
 package assets
 
 import (
-	"firefly-jam-2026/pkg/util"
+	"github.com/applejag/firefly-jam-2026/pkg/util"
 	"slices"
 
 	"github.com/firefly-zero/firefly-go/firefly"

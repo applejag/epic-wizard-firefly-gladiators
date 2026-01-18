@@ -1,14 +1,14 @@
 package game
 
 import (
-	"firefly-jam-2026/assets"
-	"firefly-jam-2026/pkg/scenes"
-	"firefly-jam-2026/pkg/scenes/field"
-	"firefly-jam-2026/pkg/scenes/insectarium"
-	"firefly-jam-2026/pkg/scenes/mainmenu"
-	"firefly-jam-2026/pkg/scenes/racebattle"
-	"firefly-jam-2026/pkg/scenes/shop"
-	"firefly-jam-2026/pkg/util"
+	"github.com/applejag/firefly-jam-2026/assets"
+	"github.com/applejag/firefly-jam-2026/pkg/scenes"
+	"github.com/applejag/firefly-jam-2026/pkg/scenes/field"
+	"github.com/applejag/firefly-jam-2026/pkg/scenes/insectarium"
+	"github.com/applejag/firefly-jam-2026/pkg/scenes/mainmenu"
+	"github.com/applejag/firefly-jam-2026/pkg/scenes/racebattle"
+	"github.com/applejag/firefly-jam-2026/pkg/scenes/shop"
+	"github.com/applejag/firefly-jam-2026/pkg/util"
 	"fmt"
 
 	"github.com/firefly-zero/firefly-go/firefly"

@@ -1,6 +1,6 @@
 package racebattle
 
-import "firefly-jam-2026/pkg/util"
+import "github.com/applejag/firefly-jam-2026/pkg/util"
 
 const PathToCurrentThresholdSquared = 60 * 60
 

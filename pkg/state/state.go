@@ -1,8 +1,8 @@
 package state
 
 import (
-	"firefly-jam-2026/pkg/util"
-	gamev1 "firefly-jam-2026/proto/game/v1"
+	"github.com/applejag/firefly-jam-2026/pkg/util"
+	gamev1 "github.com/applejag/firefly-jam-2026/proto/game/v1"
 	"fmt"
 
 	"github.com/firefly-zero/firefly-go/firefly"
