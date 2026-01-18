@@ -73,7 +73,7 @@ func (g *GameState) Save() {
 			Nimbleness: int32(f.Nimbleness),
 		}
 	}
-	var buf [1000]byte
+	var buf [100]byte
 	written, err := state.MarshalToVT(buf[:])
 	if err != nil {
 		panic("failed to marshal save file")
