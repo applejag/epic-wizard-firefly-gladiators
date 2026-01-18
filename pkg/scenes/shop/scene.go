@@ -29,7 +29,7 @@ func (s *Scene) Render() {
 	s.Frog.Render()
 }
 
-func (s Scene) OnSceneEnter() {
+func (s *Scene) OnSceneEnter() {
 	if state.Game.BattlesPlayedTotal == 0 {
 		if len(state.Game.Fireflies) == 0 && len(s.Shop.Items) == 0 {
 			// brand new player, they get a free firefly

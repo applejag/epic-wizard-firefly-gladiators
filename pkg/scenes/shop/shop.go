@@ -1,12 +1,13 @@
 package shop
 
 import (
+	"fmt"
+	"slices"
+
 	"github.com/applejag/firefly-jam-2026/assets"
 	"github.com/applejag/firefly-jam-2026/pkg/scenes"
 	"github.com/applejag/firefly-jam-2026/pkg/state"
 	"github.com/applejag/firefly-jam-2026/pkg/util"
-	"fmt"
-	"slices"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -59,6 +60,10 @@ func (s *Shop) handleInputDPad4(justPressed firefly.DPad4) {
 func (s *Shop) handleInputButtons(justPressed firefly.Buttons) {
 	if justPressed.S && s.Selected >= 0 && s.Selected < len(s.Items) {
 		item := s.Items[s.Selected]
+		if item.Price > state.Game.Money {
+			return
+		}
+		state.Game.Money -= item.Price
 		firefly.LogDebug("buy 1x: " + item.Kind.String())
 		switch item.Kind {
 		case ItemDrug:
@@ -75,6 +80,7 @@ func (s *Shop) handleInputButtons(justPressed firefly.Buttons) {
 				s.Items = slices.Delete(s.Items, s.Selected, s.Selected+1)
 			}
 		}
+		state.Game.Save()
 	}
 	if justPressed.E && len(state.Game.Fireflies) > 0 {
 		scenes.SwitchScene(scenes.Field)
@@ -88,9 +94,13 @@ func (s *Shop) Render() {
 		pos := startPos.Add(firefly.P((i%4)*offset.W, (i/4)*offset.H))
 		item.Bg.Draw(pos)
 		item.Icon.Draw(pos)
+		textWidth := len(item.priceStr) * assets.FontPico8_4x6.CharWidth()
+		priceColor := firefly.ColorYellow
+		if state.Game.Money >= item.Price {
+			priceColor = firefly.ColorGreen
+		}
+		assets.FontPico8_4x6.Draw(item.priceStr, pos.Add(firefly.P(offset.W/2-textWidth/2, offset.H-6)), priceColor)
 		if item.Quantity > 0 {
-			textWidth := len(item.priceStr) * assets.FontPico8_4x6.CharWidth()
-			assets.FontPico8_4x6.Draw(item.priceStr, pos.Add(firefly.P(offset.W/2-textWidth/2, offset.H-6)), firefly.ColorYellow)
 			quantityStr := fmt.Sprintf("x%d", item.Quantity)
 			quantityWidth := len(quantityStr) * assets.FontPico8_4x6.CharWidth()
 			assets.FontPico8_4x6.Draw(quantityStr, pos.Add(firefly.P(offset.W-quantityWidth-3, 7)), firefly.ColorDarkGray)
