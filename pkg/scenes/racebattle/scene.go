@@ -2,10 +2,11 @@ package racebattle
 
 import (
 	"cmp"
+	"slices"
+
 	"github.com/applejag/firefly-jam-2026/assets"
 	"github.com/applejag/firefly-jam-2026/pkg/state"
 	"github.com/applejag/firefly-jam-2026/pkg/util"
-	"slices"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -68,7 +69,7 @@ func (s *Scene) Render() {
 	// Players
 	var me *Firefly
 	for i, player := range s.Players {
-		if player.Peer == state.Input.Me {
+		if player.IsPlayer && player.Peer == state.Input.Me {
 			me = &s.Players[i]
 		} else {
 			player.Draw(s)
@@ -87,9 +88,18 @@ func (s *Scene) OnSceneEnter() {
 	clear(s.Players)
 	s.Players = s.Players[:0]
 	for peer := range state.Game.InRaceBattle {
-		// TODO: randomize the position a little
-		s.Players = append(s.Players, NewFireflyPlayer(peer, util.V(41, 390), firefly.Degrees(270)))
+		s.Players = append(s.Players, NewFireflyPlayer(peer, util.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))
 	}
-	// TODO: add AI players
+	for len(s.Players) < 5 {
+		s.Players = append(s.Players, NewFireflyAI(util.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))
+	}
 	s.Camera.Update(s)
+}
+
+func offsetForPlayer(index int) util.Vec2 {
+	if index == 0 {
+		return util.V(0, 0)
+	}
+	angle := firefly.Degrees(60 * float32(index-1))
+	return util.AngleToVec2(angle).Scale(12)
 }

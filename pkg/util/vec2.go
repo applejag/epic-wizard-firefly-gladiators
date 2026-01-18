@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/firefly-zero/firefly-go/firefly"
@@ -25,6 +26,10 @@ func AngleToVec2(angle firefly.Angle) Vec2 {
 		X: tinymath.Cos(angle.Radians()),
 		Y: -tinymath.Sin(angle.Radians()),
 	}
+}
+
+func (v Vec2) String() string {
+	return fmt.Sprintf("{%.1f, %.1f}", v.X, v.Y)
 }
 
 func (v Vec2) Point() firefly.Point {
