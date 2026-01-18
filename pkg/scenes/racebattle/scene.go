@@ -14,7 +14,13 @@ import (
 type Scene struct {
 	AnimatedClouds util.AnimatedSheet
 	Players        []Firefly
+	Standing       []Standing
 	Camera         Camera
+}
+
+type Standing struct {
+	Progress float32
+	*Firefly
 }
 
 func (s *Scene) Boot() {
@@ -26,13 +32,14 @@ func (s *Scene) Update() {
 		s.Players[i].Update()
 	}
 	s.nudgeFirefliesAwayFromEachOther()
-	s.Camera.Update(s)
-	s.AnimatedClouds.Update()
-
+	s.updateStanding()
 	// Sort by Y-axis so that they're drawn in the right order
 	slices.SortFunc(s.Players, func(a, b Firefly) int {
 		return cmp.Compare(a.Pos.Y, b.Pos.Y)
 	})
+
+	s.Camera.Update(s)
+	s.AnimatedClouds.Update()
 }
 
 func (s *Scene) nudgeFirefliesAwayFromEachOther() {
@@ -41,6 +48,26 @@ func (s *Scene) nudgeFirefliesAwayFromEachOther() {
 			s.Players[i].MoveAwayFrom(&s.Players[j])
 		}
 	}
+}
+
+func (s *Scene) updateStanding() {
+	clear(s.Standing)
+	if len(s.Standing) < len(s.Players) {
+		s.Standing = slices.Grow(s.Standing, len(s.Players)-len(s.Standing))
+	}
+	s.Standing = s.Standing[:len(s.Players)]
+
+	for i, player := range s.Players {
+		s.Standing[i] = Standing{
+			Progress: player.PathTracker.Progress(player.Pos),
+			Firefly:  &s.Players[i],
+		}
+	}
+
+	// sort so the highest progress is on index 0
+	slices.SortFunc(s.Standing, func(a, b Standing) int {
+		return cmp.Compare(b.Progress, a.Progress)
+	})
 }
 
 func (s *Scene) Render() {
