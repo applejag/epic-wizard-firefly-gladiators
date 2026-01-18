@@ -16,9 +16,12 @@ type GameState struct {
 func (g *GameState) AddFirefly() {
 	nextID++
 	name := util.RandomName()
+	randomness := util.RandomRange(8, 14)
 	g.Fireflies = append(g.Fireflies, Firefly{
-		ID:   nextID,
-		Name: name,
+		ID:         nextID,
+		Name:       name,
+		Speed:      randomness,
+		Nimbleness: 8 + (14 - randomness),
 	})
 }
 
@@ -32,6 +35,8 @@ func (g *GameState) FindFireflyByID(id int) int {
 }
 
 type Firefly struct {
-	ID   int
-	Name util.Name
+	ID         int
+	Name       util.Name
+	Speed      int
+	Nimbleness int
 }

@@ -4,6 +4,8 @@ import (
 	"firefly-jam-2026/assets"
 	"firefly-jam-2026/pkg/state"
 	"firefly-jam-2026/pkg/util"
+	"strconv"
+	"strings"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -77,6 +79,7 @@ func (m *FireflyModal) Render() {
 
 func (m *FireflyModal) renderScroll(point firefly.Point) {
 	m.scrollSprite.Draw(point)
+	assets.Exit.Draw(point.Add(firefly.P(74, 2)))
 
 	dataIndex := state.Game.FindFireflyByID(m.firefly.id)
 	if dataIndex == -1 {
@@ -94,5 +97,17 @@ func (m *FireflyModal) renderScroll(point firefly.Point) {
 		assets.FontEG_6x9.CharWidth(),
 	)
 
-	assets.FontEG_6x9.Draw(text, innerScrollPoint.Add(firefly.P(0, 10)), firefly.ColorDarkGray)
+	charHeight := assets.FontEG_6x9.CharHeight()
+
+	textPos := innerScrollPoint.Add(firefly.P(0, 10))
+	assets.FontEG_6x9.Draw(text, textPos, firefly.ColorDarkGray)
+	textHeight := charHeight * (strings.Count(text, "\n") + 1)
+
+	speedPoint := textPos.Add(firefly.P(2, textHeight+4))
+	assets.FontEG_6x9.Draw(strconv.Itoa(data.Speed), speedPoint, firefly.ColorBlack)
+	assets.FontPico8_4x6.Draw("speed", speedPoint.Add(firefly.P(0, charHeight)), firefly.ColorGray)
+
+	nimblenessPoint := textPos.Add(firefly.P(36, textHeight+4))
+	assets.FontEG_6x9.Draw(strconv.Itoa(data.Nimbleness), nimblenessPoint, firefly.ColorBlack)
+	assets.FontPico8_4x6.Draw("nimbleness", nimblenessPoint.Add(firefly.P(0, charHeight)), firefly.ColorGray)
 }
