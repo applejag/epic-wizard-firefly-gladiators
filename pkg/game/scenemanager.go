@@ -118,6 +118,8 @@ func (s *SceneManager) Render() {
 func (s *SceneManager) onSceneSwitch(scene scenes.Scene) {
 	switch scene {
 	case scenes.Field:
-		s.Field.OnSceneSwitch()
+		s.Field.OnSceneEnter()
+	case scenes.RaceBattle:
+		s.RaceBattle.OnSceneEnter()
 	}
 }

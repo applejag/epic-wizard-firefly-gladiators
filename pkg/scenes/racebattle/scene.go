@@ -1,9 +1,11 @@
 package racebattle
 
 import (
+	"cmp"
 	"firefly-jam-2026/assets"
 	"firefly-jam-2026/pkg/state"
 	"firefly-jam-2026/pkg/util"
+	"slices"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -43,10 +45,10 @@ type Scene struct {
 
 func (s *Scene) Boot() {
 	s.AnimatedClouds = assets.RacingMapClouds.Animated(2)
-	s.Players = []Firefly{
-		NewFireflyPlayer(state.Input.Me, util.V(41, 390), firefly.Degrees(270)),
-	}
-	s.Camera.Update(s)
+	// Sort by Y-axis so that they're drawn in the right order
+	slices.SortFunc(s.Players, func(a, b Firefly) int {
+		return cmp.Compare(a.Pos.Y, b.Pos.Y)
+	})
 }
 
 func (s *Scene) Update() {
@@ -79,4 +81,15 @@ func (s *Scene) Render() {
 	// Draw tree tops layer on top
 	assets.RacingMapTreetops.Draw(mapPos)
 	s.AnimatedClouds.Draw(mapPos)
+}
+
+func (s *Scene) OnSceneEnter() {
+	clear(s.Players)
+	s.Players = s.Players[:0]
+	for peer := range state.Game.InRaceBattle {
+		// TODO: randomize the position a little
+		s.Players = append(s.Players, NewFireflyPlayer(peer, util.V(41, 390), firefly.Degrees(270)))
+	}
+	// TODO: add AI players
+	s.Camera.Update(s)
 }

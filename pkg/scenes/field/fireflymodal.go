@@ -41,11 +41,21 @@ func (m *FireflyModal) Open(firefly *Firefly) {
 }
 
 func (m *FireflyModal) Close() {
-	if m.IsClosing() {
+	if m.IsOpen() && m.IsClosing() {
 		return
 	}
 
 	m.scrollCloseAnim.Play()
+	m.firefly = nil
+	m.isOpen = false
+}
+
+func (m *FireflyModal) CloseWithoutTransition() {
+	if m.IsOpen() && m.IsClosing() {
+		return
+	}
+
+	m.scrollCloseAnim.Stop()
 	m.firefly = nil
 	m.isOpen = false
 }
@@ -111,6 +121,7 @@ func (m *FireflyModal) handleInputButtons(justPressed firefly.Buttons) {
 			m.giveVitaminsBtn.Shake()
 		case ButtonTournament:
 			state.Game.AddMyFireflyToRaceBattle(m.firefly.id)
+			m.CloseWithoutTransition()
 			scenes.SwitchScene(scenes.RaceBattle)
 		}
 	}

@@ -141,7 +141,7 @@ func (s *Scene) FindFireflyByID(id int) int {
 	return -1
 }
 
-func (s *Scene) OnSceneSwitch() {
+func (s *Scene) OnSceneEnter() {
 	s.focusedID = -1
 	for _, f := range state.Game.Fireflies {
 		idx := s.FindFireflyByID(f.ID)

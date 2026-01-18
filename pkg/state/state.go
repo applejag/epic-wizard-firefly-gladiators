@@ -8,7 +8,9 @@ import (
 
 var (
 	nextID int
-	Game   GameState
+	Game   = GameState{
+		InRaceBattle: map[firefly.Peer]Firefly{},
+	}
 )
 
 type GameState struct {
