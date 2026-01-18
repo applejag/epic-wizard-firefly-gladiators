@@ -3,7 +3,6 @@ package assets
 import (
 	"firefly-jam-2026/pkg/util"
 	"slices"
-	"strconv"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -70,7 +69,7 @@ var (
 )
 
 func Load() {
-	firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("shop-btn")))
+	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("shop-btn")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	FireflyHighlight = util.SplitImageBySize(firefly.LoadImage("firefly-hi", fireflyHighlightBuf[:]), firefly.S(32, 32))
 	ScrollClose = util.SplitImageByCount(firefly.LoadImage("scroll", scrollBuf[:]), firefly.S(4, 1))
