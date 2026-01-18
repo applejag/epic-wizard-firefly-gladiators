@@ -75,10 +75,12 @@ func (f *Firefly) Update() {
 	}
 	dir := util.AngleToVec2(f.Angle)
 	newPos := f.Pos.Add(dir.Scale(MoveMaxSpeed * f.SpeedFactor))
-	maskColor := assets.RacingMapMask.GetColorAt(newPos.Point())
-	if maskColor == firefly.ColorWhite {
+	switch assets.RacingMapMask.GetColorAt(newPos.Point()) {
+	case firefly.ColorWhite:
 		f.Pos = newPos
 		f.PathTracker.Update(f.Pos)
+	default:
+		f.SpeedFactor = 0 // reset momentum
 	}
 }
 
