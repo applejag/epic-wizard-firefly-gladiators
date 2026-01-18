@@ -123,7 +123,7 @@ func (m *FireflyModal) handleInputButtons(justPressed firefly.Buttons) {
 		case ButtonTournament:
 			state.Game.AddMyFireflyToRaceBattle(m.firefly.id)
 			m.CloseWithoutTransition()
-			scenes.SwitchScene(scenes.RacingBattle)
+			scenes.SwitchScene(scenes.RacingTraining)
 		}
 	}
 }

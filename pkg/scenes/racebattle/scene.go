@@ -2,6 +2,7 @@ package racebattle
 
 import (
 	"cmp"
+	"fmt"
 	"slices"
 
 	"github.com/applejag/firefly-jam-2026/assets"
@@ -40,7 +41,10 @@ type Scene struct {
 	// - 1 means 1st place
 	// - 2 means 2nd place
 	// - 3 means 3rd place
-	myPlayerPlace byte
+	myPlayerPlace   byte
+	rewards         Rewards
+	rewardsText     string
+	ticksSinceStart int
 }
 
 func (s *Scene) Boot() {
@@ -57,6 +61,8 @@ func (s *Scene) Boot() {
 func (s *Scene) Update() {
 	switch s.status {
 	case GamePlaying:
+		s.ticksSinceStart++
+
 		for i := range s.Players {
 			result := s.Players[i].Update()
 			if result == PathTrackerLooped {
@@ -201,7 +207,7 @@ func (s *Scene) Render() {
 		}
 
 	case GamePlaying:
-		if s.myPlayerPlace >= 1 && s.myPlayerPlace <= 3 {
+		if len(s.Players) > 1 && s.myPlayerPlace >= 1 && s.myPlayerPlace <= 3 {
 			assets.RacingPlace[s.myPlayerPlace-1].Draw(firefly.P(firefly.Width-28-4, 4))
 		}
 
@@ -210,6 +216,11 @@ func (s *Scene) Render() {
 		if s.VictorySplash.IsPaused() {
 			s.ButtonHighlight.Draw(firefly.P(137, 69))
 		}
+
+		point := firefly.P(143, 117)
+		assets.FontEG_6x9.Draw(s.rewardsText, point.Add(firefly.P(1, 1)), firefly.ColorDarkGray)
+		assets.FontEG_6x9.Draw(s.rewardsText, point, firefly.ColorWhite)
+
 	case GameOverDefeat:
 		s.DefeatSplash.DrawOrLastFrame(firefly.P(0, 0))
 		if s.DefeatSplash.IsPaused() {
@@ -250,10 +261,13 @@ func (s *Scene) changeStatus(newStatus GameStatus) {
 			state.Game.Fireflies[idx].BattlesWon++
 			state.Game.BattlesPlayedTotal++
 			state.Game.BattlesWonTotal++
-			state.Game.Money += 10
+			s.rewards = CalculateRewards(s)
+			s.rewardsText = fmt.Sprintf("+%d speed\n+%d nimble\n+%d money", s.rewards.Speed, s.rewards.Nimbleness, s.rewards.Money)
+			s.rewards.Apply(&state.Game.Fireflies[idx])
 			state.Game.Save()
 		}
 	case GamePlaying:
+		s.ticksSinceStart = 0
 	case GameStarting:
 		s.countdownNum = 4
 		s.countdownTime = 20
@@ -279,6 +293,8 @@ func (s *Scene) OnSceneEnter(players int) {
 	s.VictorySplash.Stop()
 	s.DefeatSplash.Stop()
 	s.defeatButton = DefeatButtonBackToField
+	s.rewards = Rewards{}
+	s.rewardsText = ""
 	s.changeStatus(GameStarting)
 }
 
