@@ -17,6 +17,11 @@ type FireflyModal struct {
 	scrollSprite    firefly.SubImage
 	tournamentAnim  util.AnimatedSheet
 	firefly         *Firefly
+
+	changeHatBtn      Button
+	giveVitaminsBtn   Button
+	playTournamentBtn Button
+	focused           ButtonKind
 }
 
 func (m *FireflyModal) IsOpen() bool {
@@ -52,6 +57,9 @@ func (m *FireflyModal) Boot() {
 	m.scrollCloseAnim.Stop()
 	m.scrollSprite = assets.ScrollClose[0]
 	m.tournamentAnim = assets.TournamentButton.Animated(6)
+	m.changeHatBtn = NewButton(ButtonChangeHat, "CHANGE HAT")
+	m.giveVitaminsBtn = NewButton(ButtonGiveVitamins, "GIVE VITAMINS")
+	m.playTournamentBtn = NewButton(ButtonTournament, "")
 }
 
 func (m *FireflyModal) Update() {
@@ -63,8 +71,26 @@ func (m *FireflyModal) Update() {
 		return
 	}
 
-	buttons := firefly.ReadButtons(firefly.GetMe())
-	if buttons.E {
+	if justPressed := state.Input.JustPressedDPad4(); justPressed != firefly.DPad4None {
+		m.handleInputDPad4(justPressed)
+	}
+	if justPressed := state.Input.JustPressedButtons(); justPressed.Any() {
+		m.handleInputButtons(justPressed)
+	}
+}
+
+func (m *FireflyModal) handleInputDPad4(justPressed firefly.DPad4) {
+	switch justPressed {
+	case firefly.DPad4Up:
+		m.focused = m.focused.Previous()
+	case firefly.DPad4Down:
+		m.focused = m.focused.Next()
+	}
+}
+
+func (m *FireflyModal) handleInputButtons(justPressed firefly.Buttons) {
+	switch {
+	case justPressed.E:
 		m.Close()
 	}
 }
@@ -122,12 +148,56 @@ func (m *FireflyModal) renderScroll(point firefly.Point) {
 	assets.FireflySheet[0].Draw(rectPoint.Add(firefly.P(6, 6)))
 
 	changeHatPoint := innerScrollPoint.Add(firefly.P(0, scrollInnerHeight-30))
-	assets.FontPico8_4x6.Draw("- CHANGE HAT", changeHatPoint, firefly.ColorGray)
+	m.changeHatBtn.Render(changeHatPoint, m.focused)
 
 	giveVitaminsPoint := changeHatPoint.Add(firefly.P(0, 9))
-	assets.FontPico8_4x6.Draw("> GIVE VITAMINS", giveVitaminsPoint, firefly.ColorBlack)
+	m.giveVitaminsBtn.Render(giveVitaminsPoint, m.focused)
 
 	tournamentPoint := giveVitaminsPoint.Add(firefly.P(0, 14))
 	m.tournamentAnim.Draw(tournamentPoint.Add(firefly.P(8, -9)))
-	assets.FontPico8_4x6.Draw("-", tournamentPoint, firefly.ColorGray)
+	m.playTournamentBtn.Render(tournamentPoint, m.focused)
+}
+
+type ButtonKind byte
+
+const (
+	ButtonNone ButtonKind = iota
+	ButtonChangeHat
+	ButtonGiveVitamins
+	ButtonTournament
+
+	buttonCount = 4
+)
+
+func (k ButtonKind) Next() ButtonKind {
+	return ButtonKind((byte(k) + 1) % buttonCount)
+}
+
+func (k ButtonKind) Previous() ButtonKind {
+	return ButtonKind((byte(k) + buttonCount - 1) % buttonCount)
+}
+
+type Button struct {
+	kind ButtonKind
+	text string
+}
+
+func NewButton(kind ButtonKind, text string) Button {
+	return Button{
+		kind: kind,
+		text: text,
+	}
+}
+
+func (b *Button) Render(point firefly.Point, focused ButtonKind) {
+	prefix := "- "
+	color := firefly.ColorGray
+	if focused == b.kind {
+		prefix = "> "
+		color = firefly.ColorBlack
+	}
+	assets.FontPico8_4x6.Draw(prefix, point, color)
+	if b.text != "" {
+		assets.FontPico8_4x6.Draw(b.text, point.Add(firefly.P(assets.FontPico8_4x6.LineWidth(prefix), 0)), color)
+	}
 }

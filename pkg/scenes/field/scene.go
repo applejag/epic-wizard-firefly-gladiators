@@ -12,9 +12,6 @@ import (
 )
 
 type Scene struct {
-	dpad4Old   firefly.DPad4
-	buttonsOld firefly.Buttons
-
 	fireflies []Firefly
 	modal     FireflyModal
 
@@ -45,23 +42,12 @@ func (s *Scene) Update() {
 		return cmp.Compare(a.pos.Y, b.pos.Y)
 	})
 
-	me := firefly.GetMe()
-	if pad, ok := firefly.ReadPad(me); ok {
-		dpad4 := pad.DPad4()
-		justPressed := dpad4.JustPressed(s.dpad4Old)
-		if justPressed != firefly.DPad4None {
-			s.handleInputDPad4(justPressed)
-		}
-		s.dpad4Old = dpad4
-	} else {
-		s.dpad4Old = firefly.DPad4None
+	if justPressed := state.Input.JustPressedDPad4(); justPressed != firefly.DPad4None {
+		s.handleInputDPad4(justPressed)
 	}
-
-	buttons := firefly.ReadButtons(me)
-	if justPressed := buttons.JustPressed(s.buttonsOld); justPressed.Any() {
+	if justPressed := state.Input.JustPressedButtons(); justPressed.Any() {
 		s.handleInputButtons(justPressed)
 	}
-	s.buttonsOld = buttons
 }
 
 func (s *Scene) handleInputDPad4(justPressed firefly.DPad4) {

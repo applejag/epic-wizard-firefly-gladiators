@@ -12,9 +12,6 @@ import (
 )
 
 type Shop struct {
-	dpad4Old   firefly.DPad4
-	buttonsOld firefly.Buttons
-
 	Selected int
 	Items    []Item
 
@@ -32,23 +29,12 @@ func (s *Shop) Boot() {
 }
 
 func (s *Shop) Update() {
-	me := firefly.GetMe()
-	if pad, ok := firefly.ReadPad(me); ok {
-		dpad4 := pad.DPad4()
-		justPressed := dpad4.JustPressed(s.dpad4Old)
-		if justPressed != firefly.DPad4None {
-			s.handleInputDPad4(justPressed)
-		}
-		s.dpad4Old = dpad4
-	} else {
-		s.dpad4Old = firefly.DPad4None
+	if justPressed := state.Input.JustPressedDPad4(); justPressed != firefly.DPad4None {
+		s.handleInputDPad4(justPressed)
 	}
-
-	buttons := firefly.ReadButtons(me)
-	if justPressed := buttons.JustPressed(s.buttonsOld); justPressed.Any() {
+	if justPressed := state.Input.JustPressedButtons(); justPressed.Any() {
 		s.handleInputButtons(justPressed)
 	}
-	s.buttonsOld = buttons
 
 	s.selectedAnim.Update()
 }

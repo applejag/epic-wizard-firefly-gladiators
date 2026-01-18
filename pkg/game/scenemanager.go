@@ -69,6 +69,9 @@ func (s *SceneManager) Boot() {
 
 func (s *SceneManager) Update() {
 	if s.nextScene == s.currentScene {
+		// intentionally coded this way with enums because I want to avoid using
+		// interfaces or function pointers for the heaviest functions like
+		// Update and Render
 		switch s.currentScene {
 		case scenes.Insectarium:
 			s.Insectarium.Update()
