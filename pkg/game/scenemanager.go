@@ -63,7 +63,7 @@ func (s *SceneManager) Boot() {
 }
 
 func (s *SceneManager) Update() {
-	if s.nextScene == s.currentScene {
+	if s.nextScene == s.currentScene && s.Transition.IsPaused() {
 		// intentionally coded this way with enums because I want to avoid using
 		// interfaces or function pointers for the heaviest functions like
 		// Update and Render
