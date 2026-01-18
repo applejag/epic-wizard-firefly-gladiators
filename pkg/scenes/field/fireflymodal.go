@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/firefly-zero/firefly-go/firefly"
+	"github.com/orsinium-labs/tinymath"
 )
 
 type FireflyModal struct {
@@ -69,6 +70,10 @@ func (m *FireflyModal) Update() {
 	m.scrollCloseAnim.Update()
 	m.tournamentAnim.Update()
 
+	m.changeHatBtn.Update()
+	m.giveVitaminsBtn.Update()
+	m.playTournamentBtn.Update()
+
 	if m.IsClosing() {
 		return
 	}
@@ -94,6 +99,18 @@ func (m *FireflyModal) handleInputButtons(justPressed firefly.Buttons) {
 	switch {
 	case justPressed.E:
 		m.Close()
+
+	case justPressed.S:
+		switch m.focused {
+		case ButtonChangeHat:
+			// Shake to signify that the button doesn't work
+			m.changeHatBtn.Shake()
+		case ButtonGiveVitamins:
+			// Shake to signify that the button doesn't work
+			m.giveVitaminsBtn.Shake()
+		case ButtonTournament:
+			// TODO: go to tournament scene
+		}
 	}
 }
 
@@ -179,16 +196,25 @@ func (k ButtonKind) Previous() ButtonKind {
 	return ButtonKind((byte(k) + buttonCount - 1) % buttonCount)
 }
 
+const ButtonShakeDuration = 45
+
 type Button struct {
 	kind     ButtonKind
 	text     string
 	Disabled bool
+	shake    int
 }
 
 func NewButton(kind ButtonKind, text string) Button {
 	return Button{
 		kind: kind,
 		text: text,
+	}
+}
+
+func (b *Button) Update() {
+	if b.shake > 0 {
+		b.shake--
 	}
 }
 
@@ -204,16 +230,22 @@ func (b *Button) Render(point firefly.Point, focused ButtonKind) {
 	}
 	assets.FontPico8_4x6.Draw(prefix, point, color)
 	if b.text != "" {
-		assets.FontPico8_4x6.Draw(b.text, point.Add(firefly.P(assets.FontPico8_4x6.LineWidth(prefix), 0)), color)
+		if b.shake > 0 {
+			t := float32(b.shake) / ButtonShakeDuration
+			point = point.Add(firefly.P(int(tinymath.Sin(t*45)*t*4), 0))
+		}
+		textPoint := point.Add(firefly.P(assets.FontPico8_4x6.LineWidth(prefix), 0))
+		assets.FontPico8_4x6.Draw(b.text, textPoint, color)
+		if b.Disabled {
+			// Draw strikethrough
+			firefly.DrawLine(textPoint, textPoint.Add(firefly.P(
+				assets.FontPico8_4x6.LineWidth(b.text),
+				-assets.FontEG_6x9.CharHeight()/2,
+			)), firefly.L(firefly.ColorGray, 1))
+		}
 	}
-	if b.Disabled {
-		// Draw strikethrough
-		firefly.DrawLine(point.Add(firefly.P(
-			assets.FontPico8_4x6.LineWidth(prefix),
-			0,
-		)), point.Add(firefly.P(
-			assets.FontPico8_4x6.LineWidth(prefix)+assets.FontPico8_4x6.LineWidth(b.text),
-			-assets.FontEG_6x9.CharHeight()/2,
-		)), firefly.L(firefly.ColorGray, 1))
-	}
+}
+
+func (b *Button) Shake() {
+	b.shake = ButtonShakeDuration
 }
