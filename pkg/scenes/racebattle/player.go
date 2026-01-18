@@ -28,6 +28,7 @@ const (
 	// Fireflies have stats like "NIMBLE: 12"
 	// but top rotation isn't 12 degrees per frame.
 	// A decent rotation speed is ~120deg/s
+	// This is later passed into firefly.Degrees(), so we're not talking radians here.
 	// Lower means wider turns, higher is snappier turns.
 	StatsRotationSpeedFactor = 8.0 / FPS // div by FPS to make it "per second"
 
