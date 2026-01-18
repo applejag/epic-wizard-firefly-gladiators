@@ -2,6 +2,8 @@ package state
 
 import (
 	"firefly-jam-2026/pkg/util"
+
+	"github.com/firefly-zero/firefly-go/firefly"
 )
 
 var (
@@ -10,7 +12,8 @@ var (
 )
 
 type GameState struct {
-	Fireflies []Firefly
+	Fireflies    []Firefly
+	InRaceBattle map[firefly.Peer]Firefly
 }
 
 func (g *GameState) AddFirefly() {
@@ -32,6 +35,18 @@ func (g *GameState) FindFireflyByID(id int) int {
 		}
 	}
 	return -1
+}
+
+func (g *GameState) AddMyFireflyToRaceBattle(id int) {
+	dataIndex := g.FindFireflyByID(id)
+	if dataIndex == -1 {
+		panic("should never be -1 here")
+	}
+	g.InRaceBattle[Input.Me] = g.Fireflies[dataIndex]
+}
+
+func (g *GameState) RemoveMyFireflyFromRaceBattle() {
+	delete(g.InRaceBattle, Input.Me)
 }
 
 type Firefly struct {

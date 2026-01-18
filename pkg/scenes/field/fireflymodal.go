@@ -2,6 +2,7 @@ package field
 
 import (
 	"firefly-jam-2026/assets"
+	"firefly-jam-2026/pkg/scenes"
 	"firefly-jam-2026/pkg/state"
 	"firefly-jam-2026/pkg/util"
 	"strconv"
@@ -109,7 +110,8 @@ func (m *FireflyModal) handleInputButtons(justPressed firefly.Buttons) {
 			// Shake to signify that the button doesn't work
 			m.giveVitaminsBtn.Shake()
 		case ButtonTournament:
-			// TODO: go to tournament scene
+			state.Game.AddMyFireflyToRaceBattle(m.firefly.id)
+			scenes.SwitchScene(scenes.RaceBattle)
 		}
 	}
 }
