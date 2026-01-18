@@ -263,10 +263,12 @@ func (s *Scene) changeStatus(newStatus GameStatus) {
 }
 
 func (s *Scene) OnSceneEnter() {
+	// clear the slices instead of setting to nil, just to avoid extra allocations
 	clear(s.Players)
 	s.Players = s.Players[:0]
-	for peer := range state.Game.InRaceBattle {
-		s.Players = append(s.Players, NewFireflyPlayer(peer, util.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))
+
+	for peer, stats := range state.Game.InRaceBattle {
+		s.Players = append(s.Players, NewFireflyPlayer(peer, stats, util.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))
 	}
 	if len(s.Players) < 2 {
 		s.Players = append(s.Players, NewFireflyBot(util.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))

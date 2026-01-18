@@ -17,13 +17,19 @@ const (
 
 	FireflyAnimationFPS = 30
 
-	// Rotation speed at top speed. Angle is the rotation speed per second
-	RotationSpeedWhenMovingRad = (110.0 / FPS) * util.DegToRad
-	// Rotation speed when standing completely still. Angle is the rotation speed per second
-	RotationSpeedWhenStillRad = (540.0 / FPS) * util.DegToRad
+	RotationSpeedFactorWhenStill = 5 // 5x faster rotation when still
 
-	/// Maximum movement speed, in pixels/frame
-	MoveMaxSpeed = 1.2
+	// Fireflies have stats like "SPEED: 12"
+	// but top speed isn't 12 pixels per frame.
+	// A decent movement speed is ~70pixels/s
+	// Lower means slower, higher means faster
+	StatsMoveSpeedFactor = 4.0 / FPS // div by FPS to make it "per second"
+
+	// Fireflies have stats like "NIMBLE: 12"
+	// but top rotation isn't 12 degrees per frame.
+	// A decent rotation speed is ~120deg/s
+	// Lower means wider turns, higher is snappier turns.
+	StatsRotationSpeedFactor = 8.0 / FPS // div by FPS to make it "per second"
 
 	MoveAwayFromEachOtherSpeed     = 0.3
 	MoveAwayFromEachOtherThreshold = 5
@@ -47,9 +53,12 @@ type Firefly struct {
 	Pos         util.Vec2
 	Angle       firefly.Angle
 	SpeedFactor float32
+
+	MoveSpeed  float32
+	Nimbleness float32
 }
 
-func NewFireflyPlayer(peer firefly.Peer, pos util.Vec2, angle firefly.Angle) Firefly {
+func NewFireflyPlayer(peer firefly.Peer, stats state.Firefly, pos util.Vec2, angle firefly.Angle) Firefly {
 	return Firefly{
 		IsPlayer:       true,
 		Peer:           peer,
@@ -58,10 +67,16 @@ func NewFireflyPlayer(peer firefly.Peer, pos util.Vec2, angle firefly.Angle) Fir
 		SpriteSheetRev: assets.FireflySheetRev.Animated(FireflyAnimationFPS),
 		Pos:            pos,
 		Angle:          angle,
+		MoveSpeed:      float32(stats.Speed),
+		Nimbleness:     float32(stats.Nimbleness),
 	}
 }
 
 func NewFireflyBot(pos util.Vec2, angle firefly.Angle) Firefly {
+	// Randomize skills
+	// These skills must be better than the starting score when buying a basic firefly
+	speed := util.RandomRange(12, 18)
+	nimbleness := 12 + (18 - speed)
 	return Firefly{
 		IsPlayer:       false,
 		PathTracker:    NewPathTracker(path),
@@ -69,6 +84,8 @@ func NewFireflyBot(pos util.Vec2, angle firefly.Angle) Firefly {
 		SpriteSheetRev: assets.FireflySheetRev.Animated(FireflyAnimationFPS),
 		Pos:            pos,
 		Angle:          angle,
+		MoveSpeed:      float32(speed),
+		Nimbleness:     float32(nimbleness),
 	}
 }
 
@@ -81,7 +98,7 @@ func (f *Firefly) Update() PathTrackerResult {
 		f.updateBotInput()
 	}
 	dir := util.AngleToVec2(f.Angle)
-	newPos := f.Pos.Add(dir.Scale(MoveMaxSpeed * f.SpeedFactor))
+	newPos := f.Pos.Add(dir.Scale(f.MoveSpeed * f.SpeedFactor * StatsMoveSpeedFactor))
 	f.Move(newPos)
 	trackerResult := f.PathTracker.Update(f.Pos)
 	if trackerResult == PathTrackerLooped {
@@ -159,8 +176,11 @@ func (f *Firefly) updateSpeedFactor(target float32) {
 }
 
 func (f *Firefly) updateAngle(target firefly.Angle) {
-	rotationSpeed := util.Lerp(RotationSpeedWhenStillRad, RotationSpeedWhenMovingRad, f.SpeedFactor)
-	f.Angle = util.RotateTowards(f.Angle, target, firefly.Radians(rotationSpeed))
+	rotationSpeedDeg := util.Lerp(
+		f.Nimbleness*StatsRotationSpeedFactor*RotationSpeedFactorWhenStill,
+		f.Nimbleness*StatsRotationSpeedFactor,
+		f.SpeedFactor)
+	f.Angle = util.RotateTowards(f.Angle, target, firefly.Degrees(rotationSpeedDeg))
 }
 
 func (f *Firefly) Render(scene *Scene) {
