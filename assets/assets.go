@@ -2,7 +2,6 @@ package assets
 
 import (
 	"slices"
-	"strconv"
 
 	"github.com/applejag/firefly-jam-2026/pkg/util"
 
@@ -44,8 +43,9 @@ var (
 	FireflySheet         util.SpriteSheet
 	FireflySheetRev      util.SpriteSheet
 
-	fireflyHatsBuf [973]byte
+	fireflyHatsBuf [1933]byte
 	FireflyHats    util.SpriteSheet
+	FireflyHatsRev util.SpriteSheet
 
 	titleScreenBuf          [38413]byte
 	TitleScreen             util.SpriteSheet
@@ -81,10 +81,12 @@ var (
 )
 
 func Load() {
-	firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("firefly")))
+	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("firefly-hats")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	FireflyHighlight = util.SplitImageBySize(firefly.LoadImage("firefly-hi", fireflyHighlightBuf[:]), firefly.S(32, 32))
-	FireflyHats = util.SplitImageBySize(firefly.LoadImage("firefly-hats", fireflyHatsBuf[:]), firefly.S(10, 8))
+	allHats := util.SplitImageBySize(firefly.LoadImage("firefly-hats", fireflyHatsBuf[:]), firefly.S(10, 8))
+	FireflyHats = allHats[:22]
+	FireflyHatsRev = allHats[22:]
 	ScrollClose = util.SplitImageByCount(firefly.LoadImage("scroll", scrollBuf[:]), firefly.S(4, 1))
 	ScrollOpen = slices.Clone(ScrollClose)
 	slices.Reverse(ScrollOpen)
@@ -102,7 +104,6 @@ func Load() {
 	fireflyCombinedSheet := util.SplitImageBySize(firefly.LoadImage("firefly", fireflySheetBuf[:]), firefly.S(9, 10))
 	FireflySheet = fireflyCombinedSheet[0:2]
 	FireflySheetRev = fireflyCombinedSheet[2:4]
-
 	TitleScreen = util.SplitImageByCount(firefly.LoadImage("title-screen", titleScreenBuf[:]), firefly.S(2, 1))
 	TitleButtonHighlight = util.SplitImageByCount(firefly.LoadImage("title-button-hi", titleButtonHighlightBuf[:]), firefly.S(2, 1))
 	TitleNoContinue = firefly.LoadImage("title-no-continue", titleNoContinueBuf[:])
