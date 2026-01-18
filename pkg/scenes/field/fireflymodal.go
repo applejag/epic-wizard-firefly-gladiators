@@ -2,6 +2,7 @@ package field
 
 import (
 	"firefly-jam-2026/assets"
+	"firefly-jam-2026/pkg/state"
 	"firefly-jam-2026/pkg/util"
 
 	"github.com/firefly-zero/firefly-go/firefly"
@@ -70,6 +71,28 @@ func (m *FireflyModal) Render() {
 	m.scrollCloseAnim.Draw(point)
 
 	if m.isOpen && m.scrollCloseAnim.IsPaused() && m.scrollOpenAnim.IsPaused() {
-		m.scrollSprite.Draw(point)
+		m.renderScroll(point)
 	}
+}
+
+func (m *FireflyModal) renderScroll(point firefly.Point) {
+	m.scrollSprite.Draw(point)
+
+	dataIndex := state.Game.FindFireflyByID(m.firefly.id)
+	if dataIndex == -1 {
+		panic("should never be -1 here")
+	}
+	data := state.Game.Fireflies[dataIndex]
+
+	const scrollInnerWidth = 77
+
+	innerScrollPoint := point.Add(firefly.P(18, 18))
+
+	text := util.WordWrap(
+		data.Name.String(),
+		scrollInnerWidth,
+		assets.FontEG_6x9.CharWidth(),
+	)
+
+	assets.FontEG_6x9.Draw(text, innerScrollPoint.Add(firefly.P(0, 10)), firefly.ColorDarkGray)
 }
