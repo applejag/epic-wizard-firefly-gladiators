@@ -13,15 +13,14 @@ description = "Install protoc plugins"
 run = "go install tool"
 
 [tasks.generate]
-# using https://github.com/planetscale/vtprotobuf
+# using https://github.com/aperturerobotics/protobuf-go-lite
 description = "Generate protobuf files"
 run = """
     : "${GOBIN:="$(go env GOBIN)"}"
     : "${GOBIN:="$(go env GOPATH)/bin"}"
     protoc \
-        --go_out=proto --plugin protoc-gen-go="${GOBIN}/protoc-gen-go" \
-        --go-vtproto_out=proto --plugin protoc-gen-go-vtproto="${GOBIN}/protoc-gen-go-vtproto" \
-        --go-vtproto_opt=features=size+marshal+unmarshal_unsafe \
+        --go-lite_out=proto --plugin protoc-gen-go-lite="${GOBIN}/protoc-gen-go-lite" \
+        --go-lite_opt=features=size+marshal+unmarshal \
         proto/game/v1/gamestate.proto
 """
 sources = ['proto/game/v1/*.proto']
