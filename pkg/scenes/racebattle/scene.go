@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"github.com/applejag/firefly-jam-2026/assets"
+	"github.com/applejag/firefly-jam-2026/pkg/scenes"
 	"github.com/applejag/firefly-jam-2026/pkg/state"
 	"github.com/applejag/firefly-jam-2026/pkg/util"
 
@@ -21,13 +22,15 @@ const (
 )
 
 type Scene struct {
-	AnimatedClouds util.AnimatedSheet
-	VictorySplash  util.AnimatedSheet
-	DefeatSplash   util.AnimatedSheet
+	AnimatedClouds  util.AnimatedSheet
+	VictorySplash   util.AnimatedSheet
+	DefeatSplash    util.AnimatedSheet
+	ButtonHighlight util.AnimatedSheet
 
-	Players []Firefly
-	Camera  Camera
-	Status  GameStatus
+	Players      []Firefly
+	Camera       Camera
+	Status       GameStatus
+	defeatButton DefeatButton
 
 	countdownNum  int
 	countdownTime int
@@ -48,6 +51,7 @@ func (s *Scene) Boot() {
 	s.DefeatSplash = assets.DefeatSplash.Animated(12)
 	s.DefeatSplash.AutoPlay = false
 	s.DefeatSplash.Stop()
+	s.ButtonHighlight = assets.TitleButtonHighlight.Animated(2)
 	s.Status = GameStarting
 }
 
@@ -78,7 +82,6 @@ func (s *Scene) Update() {
 		s.AnimatedClouds.Update()
 
 	case GameStarting:
-		// TODO: we should start in "GameStarting", and do a countdown
 		s.countdownTime--
 		if s.countdownTime <= 0 {
 			s.countdownNum--
@@ -91,8 +94,39 @@ func (s *Scene) Update() {
 
 	case GameOverVictory:
 		s.VictorySplash.Update()
+		s.ButtonHighlight.Update()
+
+		if !s.VictorySplash.IsPaused() {
+			return
+		}
+		justPressedButtons := state.Input.JustPressedButtons()
+		if justPressedButtons.S || justPressedButtons.E {
+			// only 1 button so "S" always goes back to field
+			scenes.SwitchScene(scenes.Field)
+		}
 	case GameOverDefeat:
 		s.DefeatSplash.Update()
+		s.ButtonHighlight.Update()
+
+		switch state.Input.JustPressedDPad4() {
+		case firefly.DPad4Up:
+			s.defeatButton = s.defeatButton.Next()
+		case firefly.DPad4Down:
+			s.defeatButton = s.defeatButton.Next()
+		}
+		justPressed := state.Input.JustPressedButtons()
+		switch {
+		case justPressed.S:
+			switch s.defeatButton {
+			case DefeatButtonBackToField:
+				scenes.SwitchScene(scenes.Field)
+			case DefeatButtonTryAgain:
+				scenes.SwitchScene(scenes.RaceBattle)
+			}
+
+		case justPressed.E:
+			scenes.SwitchScene(scenes.Field)
+		}
 	}
 }
 
@@ -176,8 +210,19 @@ func (s *Scene) Render() {
 
 	case GameOverVictory:
 		s.VictorySplash.DrawOrLastFrame(firefly.P(0, 0))
+		if s.VictorySplash.IsPaused() {
+			s.ButtonHighlight.Draw(firefly.P(137, 69))
+		}
 	case GameOverDefeat:
 		s.DefeatSplash.DrawOrLastFrame(firefly.P(0, 0))
+		if s.DefeatSplash.IsPaused() {
+			switch s.defeatButton {
+			case DefeatButtonBackToField:
+				s.ButtonHighlight.Draw(firefly.P(5, 71))
+			case DefeatButtonTryAgain:
+				s.ButtonHighlight.Draw(firefly.P(5, 90))
+			}
+		}
 	}
 }
 
@@ -195,6 +240,7 @@ func (s *Scene) OnSceneEnter() {
 
 	s.VictorySplash.Stop()
 	s.DefeatSplash.Stop()
+	s.defeatButton = DefeatButtonBackToField
 	s.Status = GameStarting
 	s.countdownNum = 4
 	s.countdownTime = 20
@@ -206,4 +252,21 @@ func offsetForPlayer(index int) util.Vec2 {
 	}
 	angle := firefly.Degrees(60 * float32(index-1))
 	return util.AngleToVec2(angle).Scale(12)
+}
+
+type DefeatButton byte
+
+const (
+	DefeatButtonBackToField DefeatButton = iota
+	DefeatButtonTryAgain
+
+	defeatButtonCount = 2
+)
+
+func (b DefeatButton) Next() DefeatButton {
+	return DefeatButton((byte(b) + 1) % defeatButtonCount)
+}
+
+func (b DefeatButton) Previous() DefeatButton {
+	return DefeatButton((byte(b) + defeatButtonCount - 1) % defeatButtonCount)
 }

@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/applejag/firefly-jam-2026/assets"
 	"github.com/applejag/firefly-jam-2026/pkg/scenes"
 	"github.com/applejag/firefly-jam-2026/pkg/scenes/field"
@@ -9,7 +11,6 @@ import (
 	"github.com/applejag/firefly-jam-2026/pkg/scenes/racebattle"
 	"github.com/applejag/firefly-jam-2026/pkg/scenes/shop"
 	"github.com/applejag/firefly-jam-2026/pkg/util"
-	"fmt"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -30,9 +31,6 @@ type SceneManager struct {
 
 // SwitchScene implements [scenes.SceneSwitcher].
 func (s *SceneManager) SwitchScene(scene scenes.Scene) {
-	if s.currentScene == scene || s.nextScene == scene {
-		return
-	}
 	s.nextScene = scene
 	s.Transition.Play()
 	firefly.LogDebug(fmt.Sprintf("switching scene from %q to %q", s.currentScene, scene))
@@ -40,9 +38,6 @@ func (s *SceneManager) SwitchScene(scene scenes.Scene) {
 }
 
 func (s *SceneManager) SwitchSceneNoTransition(scene scenes.Scene) {
-	if s.currentScene == scene {
-		return
-	}
 	prev := s.currentScene
 	s.nextScene = scene
 	s.currentScene = scene
