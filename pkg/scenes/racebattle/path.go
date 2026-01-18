@@ -59,47 +59,71 @@ var path = Path{
 type Path []util.Vec2
 
 type PathTracker struct {
-	path  Path
-	index int
+	path     Path
+	index    int
+	previous util.Vec2
+	current  util.Vec2
+	next     util.Vec2
 }
 
 func NewPathTracker(path Path) PathTracker {
-	return PathTracker{path: path}
+	return PathTracker{
+		path:     path,
+		previous: path[len(path)-1],
+		current:  path[0],
+		next:     path[1],
+	}
 }
 
 func (p PathTracker) PeekPrevious() util.Vec2 {
-	return p.path[(p.index-1+len(p.path))%len(p.path)]
+	return p.previous
 }
 
 func (p PathTracker) PeekCurrent() util.Vec2 {
-	return p.path[p.index]
+	return p.current
 }
 
 func (p PathTracker) PeekNext() util.Vec2 {
-	return p.path[(p.index+1)%len(p.path)]
+	return p.next
 }
 
 func (p *PathTracker) GoNext() {
+	p.previous = p.current
 	p.index = (p.index + 1) % len(p.path)
+	p.current = p.path[p.index]
+	p.next = p.path[(p.index+1)%len(p.path)]
 }
 
-func (p *PathTracker) PeekSoftNext(from util.Vec2) util.Vec2 {
-	current := p.PeekCurrent()
-	next := p.PeekNext()
-	prev := p.PeekPrevious()
+func (p *PathTracker) PeekSoftNext(currentPos util.Vec2) util.Vec2 {
+	currentTarget := p.PeekCurrent()
+	nextTarget := p.PeekNext()
+	prevTarget := p.PeekPrevious()
 
 	// TODO: this implementation is a little buggy
 	// it's not smooth at all when it switches checkpoints.
 	// Maybe if we checked the distance to a point that's projected on a line
 	// that's perpendicular with the prev->current line and that crosses the current target.
-	distSqToCurrent := current.Sub(from).RadiusSquared()
-	distSqFromPrev := current.Sub(prev).RadiusSquared()
+	distSqToCurrent := currentTarget.Sub(currentPos).RadiusSquared()
+	distSqFromPrev := currentTarget.Sub(prevTarget).RadiusSquared()
 	distWeight := 1 - min(distSqToCurrent/distSqFromPrev, 1)
 
 	return util.V(
-		util.Lerp(current.X, next.X, distWeight),
-		util.Lerp(current.Y, next.Y, distWeight),
+		util.Lerp(currentTarget.X, nextTarget.X, distWeight),
+		util.Lerp(currentTarget.Y, nextTarget.Y, distWeight),
 	)
+}
+
+// Progress returns the percentage (0.0-1.0) of progress made throughout the
+// path. The "pos" is used to calculate fractional progress between checkpoints.
+func (p *PathTracker) Progress(pos util.Vec2) float32 {
+	prev := p.PeekPrevious()
+	current := p.PeekCurrent()
+
+	distSqToCurrent := current.Sub(pos).RadiusSquared()
+	distSqFromPrev := current.Sub(prev).RadiusSquared()
+	distWeight := 1 - min(distSqToCurrent/distSqFromPrev, 1)
+
+	return float32(p.index+1)/float32(len(p.path)) + distWeight/float32(len(p.path))
 }
 
 func (p *PathTracker) Update(pos util.Vec2) {
