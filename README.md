@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2025 Kalle Fagerberg
 SPDX-License-Identifier: CC0-1.0
 -->
 
-# Firefly Jam submission
+# Epic Wizard Firefly Gladiators
 
 [![NO AI](https://raw.githubusercontent.com/nuxy/no-ai-badge/master/badge.svg)](https://github.com/nuxy/no-ai-badge)
 
