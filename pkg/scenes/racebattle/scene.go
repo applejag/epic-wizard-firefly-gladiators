@@ -2,6 +2,7 @@ package racebattle
 
 import (
 	"firefly-jam-2026/assets"
+	"firefly-jam-2026/pkg/state"
 	"firefly-jam-2026/pkg/util"
 
 	"github.com/firefly-zero/firefly-go/firefly"
@@ -38,14 +39,12 @@ type Scene struct {
 	AnimatedClouds util.AnimatedSheet
 	Players        []Firefly
 	Camera         Camera
-	Me             firefly.Peer
 }
 
 func (s *Scene) Boot() {
 	s.AnimatedClouds = assets.RacingMapClouds.Animated(2)
-	s.Me = firefly.GetMe()
 	s.Players = []Firefly{
-		NewFireflyPlayer(s.Me, util.V(41, 390), firefly.Degrees(270)),
+		NewFireflyPlayer(state.Input.Me, util.V(41, 390), firefly.Degrees(270)),
 	}
 	s.Camera.Update(s)
 }
@@ -67,7 +66,7 @@ func (s *Scene) Render() {
 	// Players
 	var me *Firefly
 	for i, player := range s.Players {
-		if player.Peer == s.Me {
+		if player.Peer == state.Input.Me {
 			me = &s.Players[i]
 		} else {
 			player.Draw(s)

@@ -38,6 +38,10 @@ func (i *InputState) Update() {
 	i.buttons = firefly.ReadButtons(i.Me)
 }
 
+func (i *InputState) Pad() (firefly.Pad, bool) {
+	return i.pad, i.hasPad
+}
+
 func (i *InputState) JustPressedButtons() firefly.Buttons {
 	return i.buttons.JustPressed(i.buttonsOld)
 }

@@ -2,6 +2,7 @@ package racebattle
 
 import (
 	"firefly-jam-2026/assets"
+	"firefly-jam-2026/pkg/state"
 	"firefly-jam-2026/pkg/util"
 	"math"
 
@@ -114,7 +115,7 @@ func (f *Firefly) Draw(scene *Scene) {
 	point := scene.Camera.WorldVec2ToCameraSpace(f.Pos)
 	// Draw shadow
 	firefly.DrawCircle(point.Add(firefly.P(-2, 2)), 5, firefly.Solid(firefly.ColorDarkGray))
-	if f.IsPlayer && f.Peer == scene.Me {
+	if f.IsPlayer && f.Peer == state.Input.Me {
 		// Draw arrow to direction you should move in
 		targetPoint := f.PathTracker.PeekNext().Add(f.PathTracker.PeekCurrent()).Scale(0.5)
 		targetAngle := targetPoint.Sub(f.Pos).Azimuth()
