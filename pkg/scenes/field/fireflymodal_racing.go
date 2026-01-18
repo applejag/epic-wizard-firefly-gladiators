@@ -20,7 +20,9 @@ func (p *RacingPage) Boot() {
 	p.trainingAnim = assets.TrainButton.Animated(2)
 	p.tournamentAnim = assets.TournamentButton.Animated(6)
 	p.trainingBtn = NewButton("")
+	p.trainingBtn.Font = assets.FontEG_6x9
 	p.tournamentBtn = NewButton("")
+	p.tournamentBtn.Font = assets.FontEG_6x9
 }
 
 func (p *RacingPage) Update() {
@@ -58,7 +60,7 @@ func (p *RacingPage) handleInputButtons(justPressed firefly.Buttons) {
 
 func (p *RacingPage) Render(innerScrollPoint firefly.Point) {
 	p.trainingAnim.Draw(innerScrollPoint.Add(firefly.P(14, 2)))
-	p.trainingBtn.Render(innerScrollPoint.Add(firefly.P(4, 10)), p.focused == RacingTraining)
+	p.trainingBtn.Render(innerScrollPoint.Add(firefly.P(4, 11)), p.focused == RacingTraining)
 	assets.FontEG_6x9.Draw(
 		"Train firefly\nNo opponents",
 		innerScrollPoint.Add(firefly.P(0, 22)),
@@ -71,7 +73,7 @@ func (p *RacingPage) Render(innerScrollPoint firefly.Point) {
 	)
 
 	p.tournamentAnim.Draw(innerScrollPoint.Add(firefly.P(14, 43)))
-	p.tournamentBtn.Render(innerScrollPoint.Add(firefly.P(4, 51)), p.focused == RacingTournament)
+	p.tournamentBtn.Render(innerScrollPoint.Add(firefly.P(4, 52)), p.focused == RacingTournament)
 	assets.FontEG_6x9.Draw(
 		"Race others\nFastest wins",
 		innerScrollPoint.Add(firefly.P(0, 63)),

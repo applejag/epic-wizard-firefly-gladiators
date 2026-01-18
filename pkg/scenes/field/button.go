@@ -12,11 +12,13 @@ type Button struct {
 	text     string
 	Disabled bool
 	shake    int
+	Font     firefly.Font
 }
 
 func NewButton(text string) Button {
 	return Button{
 		text: text,
+		Font: assets.FontPico8_4x6,
 	}
 }
 
@@ -36,19 +38,19 @@ func (b *Button) Render(point firefly.Point, isFocused bool) {
 	if b.Disabled {
 		color = firefly.ColorLightGray
 	}
-	assets.FontPico8_4x6.Draw(prefix, point, color)
+	b.Font.Draw(prefix, point, color)
 	if b.text != "" {
 		if b.shake > 0 {
 			t := float32(b.shake) / ButtonShakeDuration
 			point = point.Add(firefly.P(int(tinymath.Sin(t*45)*t*4), 0))
 		}
-		textPoint := point.Add(firefly.P(assets.FontPico8_4x6.LineWidth(prefix), 0))
-		assets.FontPico8_4x6.Draw(b.text, textPoint, color)
+		textPoint := point.Add(firefly.P(b.Font.LineWidth(prefix), 0))
+		b.Font.Draw(b.text, textPoint, color)
 		if b.Disabled {
 			// Draw strikethrough
 			firefly.DrawLine(textPoint, textPoint.Add(firefly.P(
-				assets.FontPico8_4x6.LineWidth(b.text),
-				-assets.FontEG_6x9.CharHeight()/2,
+				b.Font.LineWidth(b.text),
+				-b.Font.CharHeight()/2,
 			)), firefly.L(firefly.ColorGray, 1))
 		}
 	}
