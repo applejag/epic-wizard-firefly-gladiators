@@ -199,3 +199,7 @@ func drawArrow(from firefly.Point, angle firefly.Angle, length int, lineStyle fi
 		toV.Add(util.AngleToVec2(angle.Add(firefly.Degrees(-145))).Scale(3)).Point(),
 		lineStyle)
 }
+
+func (f *Firefly) Progress() float32 {
+	return f.PathTracker.Progress(f.Pos)
+}

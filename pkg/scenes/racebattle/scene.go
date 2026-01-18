@@ -14,13 +14,14 @@ import (
 type Scene struct {
 	AnimatedClouds util.AnimatedSheet
 	Players        []Firefly
-	Standing       []Standing
 	Camera         Camera
-}
 
-type Standing struct {
-	Progress float32
-	*Firefly
+	// Placement among all competitors.
+	//
+	// - 1 means 1st place
+	// - 2 means 2nd place
+	// - 3 means 3rd place
+	myPlayerPlace byte
 }
 
 func (s *Scene) Boot() {
@@ -32,7 +33,7 @@ func (s *Scene) Update() {
 		s.Players[i].Update()
 	}
 	s.nudgeFirefliesAwayFromEachOther()
-	s.updateStanding()
+	s.updateMyPlayerPlace()
 	// Sort by Y-axis so that they're drawn in the right order
 	slices.SortFunc(s.Players, func(a, b Firefly) int {
 		return cmp.Compare(a.Pos.Y, b.Pos.Y)
@@ -50,24 +51,26 @@ func (s *Scene) nudgeFirefliesAwayFromEachOther() {
 	}
 }
 
-func (s *Scene) updateStanding() {
-	clear(s.Standing)
-	if len(s.Standing) < len(s.Players) {
-		s.Standing = slices.Grow(s.Standing, len(s.Players)-len(s.Standing))
-	}
-	s.Standing = s.Standing[:len(s.Players)]
-
-	for i, player := range s.Players {
-		s.Standing[i] = Standing{
-			Progress: player.PathTracker.Progress(player.Pos),
-			Firefly:  &s.Players[i],
+func (s *Scene) updateMyPlayerPlace() {
+	var myProgress float32
+	for _, player := range s.Players {
+		if player.IsPlayer && player.Peer == state.Input.Me {
+			myProgress = player.Progress()
+			break
 		}
 	}
 
-	// sort so the highest progress is on index 0
-	slices.SortFunc(s.Standing, func(a, b Standing) int {
-		return cmp.Compare(b.Progress, a.Progress)
-	})
+	var playersWithHigerProgress byte
+	for _, player := range s.Players {
+		if player.IsPlayer && player.Peer == state.Input.Me {
+			continue
+		}
+		if player.Progress() > myProgress {
+			playersWithHigerProgress++
+		}
+	}
+
+	s.myPlayerPlace = playersWithHigerProgress + 1
 }
 
 func (s *Scene) Render() {
@@ -92,6 +95,10 @@ func (s *Scene) Render() {
 	// Draw tree tops layer on top
 	assets.RacingMapTreetops.Draw(mapPos)
 	s.AnimatedClouds.Draw(mapPos)
+
+	if s.myPlayerPlace >= 1 && s.myPlayerPlace <= 3 {
+		assets.RacingPlace[s.myPlayerPlace-1].Draw(firefly.P(firefly.Width-28-4, 4))
+	}
 }
 
 func (s *Scene) OnSceneEnter() {

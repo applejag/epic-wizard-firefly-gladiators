@@ -1,8 +1,9 @@
 package assets
 
 import (
-	"github.com/applejag/firefly-jam-2026/pkg/util"
 	"slices"
+
+	"github.com/applejag/firefly-jam-2026/pkg/util"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -30,6 +31,8 @@ var (
 	RacingMapClouds      util.SpriteSheet
 	racingMapMaskBuf     [96007]byte
 	RacingMapMask        util.ExtImage
+	racingPlaceBuf       [1465]byte
+	RacingPlace          util.SpriteSheet
 	fireflySheetBuf      [333]byte
 	FireflySheet         util.SpriteSheet
 	fireflySheetRevBuf   [333]byte
@@ -69,7 +72,7 @@ var (
 )
 
 func Load() {
-	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("shop-btn")))
+	// firefly.LogDebug(strconv.Itoa(firefly.GetFileSize("racing-place")))
 	Field = firefly.LoadImage("field", fieldBuf[:])
 	FireflyHighlight = util.SplitImageBySize(firefly.LoadImage("firefly-hi", fireflyHighlightBuf[:]), firefly.S(32, 32))
 	ScrollClose = util.SplitImageByCount(firefly.LoadImage("scroll", scrollBuf[:]), firefly.S(4, 1))
@@ -82,6 +85,7 @@ func Load() {
 	RacingMapTreetops = firefly.LoadImage("racing-map-treetops", racingMapTreetopsBuf[:])
 	RacingMapClouds = util.SplitImageByCount(firefly.LoadImage("racing-map-clouds", racingMapCloudsBuf[:]), firefly.S(2, 1))
 	RacingMapMask = util.NewExtImage(firefly.LoadFile("racing-map-mask", racingMapMaskBuf[:]))
+	RacingPlace = util.SplitImageBySize(firefly.LoadImage("racing-place", racingPlaceBuf[:]), firefly.S(28, 33))
 	FireflySheet = util.SplitImageByCount(firefly.LoadImage("firefly", fireflySheetBuf[:]), firefly.S(7, 1))
 	FireflySheetRev = util.SplitImageByCount(firefly.LoadImage("firefly-rev", fireflySheetRevBuf[:]), firefly.S(7, 1))
 	TitleScreen = util.SplitImageByCount(firefly.LoadImage("title-screen", titleScreenBuf[:]), firefly.S(2, 1))
