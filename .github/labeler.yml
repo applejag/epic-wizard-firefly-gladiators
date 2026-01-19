@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2026 Kalle Fagerberg
+#
+# SPDX-License-Identifier: CC0-1.0
+
+go:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.go"
+          - "**/go.mod"
+          - "**/go.sum"
+          - "**/go.work"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/go.mod"
+          - "**/go.sum"
+          - "**/mise.toml"
+          - "**/mise.lock"
+
+github_actions:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/*"
+          - ".github/dependabot.yml"
+          - ".github/labeler.yml"
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "docs/*"
+
+assets:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "assets/**"
