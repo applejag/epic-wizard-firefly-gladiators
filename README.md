@@ -50,9 +50,11 @@ firefly CLI:
 
 ```bash
 firefly_cli import ~/Downloads/applejag.ewfg.zip
+firefly_cli emulator --id applejag.ewfg 
 
 # or if you have "firefly_cli" installed as "ff"
 ff import ~/Downloads/applejag.ewfg.zip
+firefly_cli emulator --id applejag.ewfg 
 ```
 
 ## Credits
