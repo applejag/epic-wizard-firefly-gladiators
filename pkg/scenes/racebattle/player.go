@@ -53,7 +53,7 @@ type Firefly struct {
 	SpriteSheet    util.AnimatedSheet
 	SpriteSheetRev util.AnimatedSheet
 
-	Pos         util.Vec2
+	Pos         ffmath.Vec
 	Angle       firefly.Angle
 	SpeedFactor float32
 
@@ -61,7 +61,7 @@ type Firefly struct {
 	Nimbleness float32
 }
 
-func NewFireflyPlayer(peer firefly.Peer, stats state.Firefly, pos util.Vec2, angle firefly.Angle) Firefly {
+func NewFireflyPlayer(peer firefly.Peer, stats state.Firefly, pos ffmath.Vec, angle firefly.Angle) Firefly {
 	return Firefly{
 		IsPlayer:       true,
 		Peer:           peer,
@@ -75,10 +75,10 @@ func NewFireflyPlayer(peer firefly.Peer, stats state.Firefly, pos util.Vec2, ang
 	}
 }
 
-func NewFireflyBot(pos util.Vec2, angle firefly.Angle) Firefly {
+func NewFireflyBot(pos ffmath.Vec, angle firefly.Angle) Firefly {
 	// Randomize skills
 	// These skills must be better than the starting score when buying a basic firefly
-	speed := 12 + ffrand.Intn(18-12)
+	speed := ffrand.IntRange(12, 18)
 	nimbleness := 12 + (18 - speed)
 	return Firefly{
 		IsPlayer:       false,
@@ -100,7 +100,7 @@ func (f *Firefly) Update() PathTrackerResult {
 	} else {
 		f.updateBotInput()
 	}
-	dir := util.AngleToVec2(f.Angle)
+	dir := ffmath.VAngle(f.Angle)
 	newPos := f.Pos.Add(dir.Scale(f.MoveSpeed * f.SpeedFactor * StatsMoveSpeedFactor))
 	f.Move(newPos)
 	trackerResult := f.PathTracker.Update(f.Pos)
@@ -111,7 +111,7 @@ func (f *Firefly) Update() PathTrackerResult {
 	return trackerResult
 }
 
-func (f *Firefly) Move(to util.Vec2) {
+func (f *Firefly) Move(to ffmath.Vec) {
 	delta := to.Sub(f.Pos)
 	if delta.RadiusSquared() <= 0.01 {
 		// no need to move
@@ -194,7 +194,7 @@ func (f *Firefly) Render(scene *Scene) {
 		// Draw arrow to direction you should move in
 		targetPoint := f.PathTracker.PeekSoftNext(f.Pos)
 		targetAngle := targetPoint.Sub(f.Pos).Azimuth()
-		targetDir := util.AngleToVec2(targetAngle)
+		targetDir := ffmath.VAngle(targetAngle)
 		drawArrow(
 			point.Add(targetDir.Scale(10).Point()),
 			targetAngle,
@@ -212,8 +212,8 @@ func (f *Firefly) Render(scene *Scene) {
 }
 
 func drawArrow(from firefly.Point, angle firefly.Angle, length int, lineStyle firefly.LineStyle) {
-	fromV := util.PointToVec2(from)
-	toV := fromV.Add(util.AngleToVec2(angle).Scale(float32(length)))
+	fromV := ffmath.VPoint(from)
+	toV := fromV.Add(ffmath.VAngle(angle).Scale(float32(length)))
 	to := toV.Point()
 	firefly.DrawLine(
 		from,
@@ -221,11 +221,11 @@ func drawArrow(from firefly.Point, angle firefly.Angle, length int, lineStyle fi
 		lineStyle)
 	firefly.DrawLine(
 		to,
-		toV.Add(util.AngleToVec2(angle.Add(firefly.Degrees(145))).Scale(3)).Point(),
+		toV.Add(ffmath.VAngle(angle.Add(firefly.Degrees(145))).Scale(3)).Point(),
 		lineStyle)
 	firefly.DrawLine(
 		to,
-		toV.Add(util.AngleToVec2(angle.Add(firefly.Degrees(-145))).Scale(3)).Point(),
+		toV.Add(ffmath.VAngle(angle.Add(firefly.Degrees(-145))).Scale(3)).Point(),
 		lineStyle)
 }
 

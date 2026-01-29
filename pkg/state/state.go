@@ -40,7 +40,7 @@ type GameState struct {
 func (g *GameState) AddFirefly() int {
 	nextID++
 	name := util.RandomName()
-	randomness := 8 + ffrand.Intn(14-8)
+	randomness := ffrand.IntRange(8, 14)
 	g.Fireflies = append(g.Fireflies, Firefly{
 		ID:         nextID,
 		Name:       name,
