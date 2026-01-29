@@ -9,6 +9,7 @@ import (
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/scenes"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/state"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/util"
+	"github.com/applejag/firefly-go-math/ffmath"
 
 	"github.com/firefly-zero/firefly-go/firefly"
 )
@@ -282,10 +283,10 @@ func (s *Scene) OnSceneEnter(players int) {
 	s.Players = s.Players[:0]
 
 	for peer, stats := range state.Game.InRaceBattle {
-		s.Players = append(s.Players, NewFireflyPlayer(peer, stats, util.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))
+		s.Players = append(s.Players, NewFireflyPlayer(peer, stats, ffmath.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))
 	}
 	for len(s.Players) < players {
-		s.Players = append(s.Players, NewFireflyBot(util.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))
+		s.Players = append(s.Players, NewFireflyBot(ffmath.V(41, 390).Add(offsetForPlayer(len(s.Players))), firefly.Degrees(271)))
 	}
 	// Update once so it focuses on player when we're transitioning to this scene
 	s.Camera.Update(s)
@@ -298,12 +299,12 @@ func (s *Scene) OnSceneEnter(players int) {
 	s.changeStatus(GameStarting)
 }
 
-func offsetForPlayer(index int) util.Vec2 {
+func offsetForPlayer(index int) ffmath.Vec {
 	if index == 0 {
-		return util.V(0, 0)
+		return ffmath.V(0, 0)
 	}
 	angle := firefly.Degrees(60 * float32(index-1))
-	return util.AngleToVec2(angle).Scale(12)
+	return ffmath.VAngle(angle).Scale(12)
 }
 
 type DefeatButton byte

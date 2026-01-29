@@ -3,7 +3,6 @@ package racebattle
 import (
 	"github.com/applejag/epic-wizard-firefly-gladiators/assets"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/state"
-	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/util"
 	"github.com/applejag/firefly-go-math/ffmath"
 
 	"github.com/firefly-zero/firefly-go/firefly"
@@ -15,10 +14,10 @@ const (
 )
 
 type Camera struct {
-	pos util.Vec2
+	pos ffmath.Vec
 }
 
-func (c Camera) WorldVec2ToCameraSpace(pos util.Vec2) firefly.Point {
+func (c Camera) WorldVec2ToCameraSpace(pos ffmath.Vec) firefly.Point {
 	return (pos.Sub(c.pos)).Round().Point()
 }
 
@@ -30,7 +29,7 @@ func (c Camera) WorldPointToCameraSpace(pos firefly.Point) firefly.Point {
 func (c *Camera) Update(scene *Scene) {
 	for _, player := range scene.Players {
 		if player.IsPlayer && player.Peer == state.Input.Me {
-			c.pos = player.Pos.Sub(util.V(ScreenWidthHalf, ScreenHeightHalf))
+			c.pos = player.Pos.Sub(ffmath.V(ScreenWidthHalf, ScreenHeightHalf))
 
 			c.pos.X = ffmath.Clamp(c.pos.X, 0, float32(assets.RacingMap.Width()-firefly.Width))
 			c.pos.Y = ffmath.Clamp(c.pos.Y, 0, float32(assets.RacingMap.Height()-firefly.Height))
