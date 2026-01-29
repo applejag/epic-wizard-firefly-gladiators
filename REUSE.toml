@@ -19,6 +19,7 @@ path = [
   "**/go.mod",
   "**/go.sum",
   "**/mise.lock",
+  "target.json",
 ]
 SPDX-FileCopyrightText = "2026 Kalle Fagerberg"
 SPDX-License-Identifier = "CC0-1.0"
