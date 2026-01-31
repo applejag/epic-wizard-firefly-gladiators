@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2025 Kalle Fagerberg
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version: "2"
+
+linters:
+  default: standard
+  enable:
+    - depguard
+    - gocritic
+
+  settings:
+    depguard:
+      rules:
+        firefly:
+          deny:
+            - pkg: fmt
+              desc: Formatting package is too big
+
+    gocritic:
+      enable-all: true
+      disabled-checks:
+        - importShadow
+        - singleCaseSwitch
+        - commentedOutCode

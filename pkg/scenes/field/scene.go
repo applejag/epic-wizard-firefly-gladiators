@@ -104,14 +104,14 @@ func (s *Scene) Render() {
 
 	if len(s.fireflies) > 0 {
 		if idx := s.FindFireflyByID(s.focusedID); idx != -1 {
-			s.renderFocused(s.fireflies[idx])
+			s.renderFocused(&s.fireflies[idx])
 		}
 	}
 
 	s.shopButtonAnim.Draw(firefly.P(firefly.Width-46, firefly.Height-16))
 }
 
-func (s *Scene) renderFocused(f Firefly) {
+func (s *Scene) renderFocused(f *Firefly) {
 	pos := f.pos.Round().Point()
 	s.highlight.Draw(pos.Sub(firefly.P(15, 15)))
 
@@ -123,8 +123,9 @@ func (s *Scene) renderFocused(f Firefly) {
 
 	text := s.cachedFireflyNameText
 	if text == "" {
+		var buf [util.LongestPossibleName]byte
 		text = util.WordWrap(
-			data.Name.String(),
+			string(buf[:data.Name.WriteInto(buf[:])]),
 			firefly.Width-75,
 			assets.FontEG_6x9.CharWidth(),
 		)
@@ -157,8 +158,8 @@ func (s *Scene) OnSceneEnter() {
 	})
 	s.cachedFireflyNameText = ""
 	s.fireflyIDs = make([]int, len(s.fireflies))
-	for i, f := range s.fireflies {
-		s.fireflyIDs[i] = f.id
+	for i := range s.fireflies {
+		s.fireflyIDs[i] = s.fireflies[i].id
 	}
 	slices.Sort(s.fireflyIDs)
 }

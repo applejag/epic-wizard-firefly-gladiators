@@ -2,7 +2,6 @@ package racebattle
 
 import (
 	"cmp"
-	"fmt"
 	"slices"
 
 	"github.com/applejag/epic-wizard-firefly-gladiators/assets"
@@ -144,7 +143,8 @@ func (s *Scene) nudgeFirefliesAwayFromEachOther() {
 
 func (s *Scene) updateMyPlayerPlace() {
 	var myProgress float32
-	for _, player := range s.Players {
+	for i := range s.Players {
+		player := &s.Players[i]
 		if player.IsPlayer && player.Peer == state.Input.Me {
 			myProgress = player.Progress() + float32(player.LoopsDone)
 			break
@@ -152,7 +152,8 @@ func (s *Scene) updateMyPlayerPlace() {
 	}
 
 	var playersWithHigerProgress byte
-	for _, player := range s.Players {
+	for i := range s.Players {
+		player := &s.Players[i]
 		if player.IsPlayer && player.Peer == state.Input.Me {
 			continue
 		}
@@ -172,9 +173,10 @@ func (s *Scene) Render() {
 	assets.RacingMapTrees.Draw(mapPos)
 	// Players
 	var me *Firefly
-	for i, player := range s.Players {
+	for i := range s.Players {
+		player := &s.Players[i]
 		if player.IsPlayer && player.Peer == state.Input.Me {
-			me = &s.Players[i]
+			me = player
 		} else {
 			player.Render(s)
 		}
@@ -263,7 +265,16 @@ func (s *Scene) changeStatus(newStatus GameStatus) {
 			state.Game.BattlesPlayedTotal++
 			state.Game.BattlesWonTotal++
 			s.rewards = CalculateRewards(s)
-			s.rewardsText = fmt.Sprintf("+%d speed\n+%d nimble\n+%d money", s.rewards.Speed, s.rewards.Nimbleness, s.rewards.Money)
+
+			var out [len("+") + 2 + len(" speed\n+") + 2 + len(" nimble\n+") + 3 + len(" money")]byte
+			index := copy(out[0:], "+")
+			index += util.FormatIntInto(out[index:], s.rewards.Speed)
+			index += copy(out[index:], " speed\n+")
+			index += util.FormatIntInto(out[index:], s.rewards.Nimbleness)
+			index += copy(out[index:], " nimble\n+")
+			index += util.FormatIntInto(out[index:], s.rewards.Money)
+			s.rewardsText = string(out[:index])
+
 			s.rewards.Apply(&state.Game.Fireflies[idx])
 			state.Game.Save()
 		}
