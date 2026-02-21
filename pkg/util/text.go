@@ -102,6 +102,14 @@ func numberOfDigits(num int) int {
 		return 4
 	case num < 1e5:
 		return 5
+	case num < 1e6:
+		return 6
+	case num < 1e7:
+		return 7
+	case num < 1e8:
+		return 8
+	case num < 1e9:
+		return 9
 	default:
 		panic("number is too big")
 	}
