@@ -119,7 +119,7 @@ func (f *Firefly) Move(to ffmath.Vec) {
 	}
 	for delta.RadiusSquared() > 0.01 {
 		to = f.Pos.Add(delta)
-		switch assets.RacingMapMask.GetColorAt(to.Point()) {
+		switch assets.RacingMapMask.GetPixel(to.Point()) {
 		case firefly.ColorWhite:
 			f.Pos = to
 			return

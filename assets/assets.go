@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	buf [1036376]byte
+	buf [1366914]byte
 
 	Field            firefly.Image
 	FireflyHighlight util.SpriteSheet
@@ -23,7 +23,7 @@ var (
 	RacingMapTrees    firefly.Image
 	RacingMapTreetops firefly.Image
 	RacingMapClouds   util.SpriteSheet
-	RacingMapMask     util.ExtImage
+	RacingMapMask     firefly.Image
 	RacingPlace       util.SpriteSheet
 	VictorySplash     util.SpriteSheet
 	DefeatSplash      util.SpriteSheet
@@ -71,7 +71,7 @@ func Load() {
 	RacingMapTrees = loader.LoadImage("racing-map-trees")
 	RacingMapTreetops = loader.LoadImage("racing-map-treetops")
 	RacingMapClouds = util.SplitImageByCount(loader.LoadImage("racing-map-clouds"), firefly.S(2, 1))
-	RacingMapMask = loader.LoadExtImage("racing-map-mask")
+	RacingMapMask = loader.LoadImage("racing-map-mask")
 	RacingPlace = util.SplitImageBySize(loader.LoadImage("racing-place"), firefly.S(28, 33))
 	VictorySplash = util.SplitImageByCount(loader.LoadImage("victory-splash"), firefly.S(3, 3))
 	DefeatSplash = util.SplitImageByCount(loader.LoadImage("defeat-splash"), firefly.S(3, 3))
@@ -105,7 +105,7 @@ func (loader *Loader) LoadFile(path string) firefly.File {
 	// https://github.com/firefly-zero/firefly-runtime/issues/7
 	fileSize := firefly.GetFileSize(path)
 	file := firefly.LoadFile(path, loader.buf[:fileSize])
-	written := len(file.Raw)
+	written := len(file.Bytes())
 	loader.used += written
 	loader.buf = loader.buf[written:]
 	return file
@@ -113,10 +113,6 @@ func (loader *Loader) LoadFile(path string) firefly.File {
 
 func (loader *Loader) LoadImage(path string) firefly.Image {
 	return loader.LoadFile(path).Image()
-}
-
-func (loader *Loader) LoadExtImage(path string) util.ExtImage {
-	return util.NewExtImage(loader.LoadFile(path))
 }
 
 func (loader *Loader) LoadFont(path string) firefly.Font {

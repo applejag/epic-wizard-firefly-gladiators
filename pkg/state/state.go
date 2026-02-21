@@ -97,12 +97,12 @@ func (g *GameState) LoadSave() bool {
 		return false
 	}
 	g.Reset()
-	if err := g.UnmarshalBinary(file.Raw); err != nil {
+	if err := g.UnmarshalBinary(file); err != nil {
 		firefly.LogError("failed to load save: " + err.Error())
 		return false
 	}
 
-	firefly.LogDebug("loaded saved game, size: " + strconv.Itoa(len(file.Raw)) + " B")
+	firefly.LogDebug("loaded saved game, size: " + strconv.Itoa(len(file)) + " B")
 	return true
 }
 
