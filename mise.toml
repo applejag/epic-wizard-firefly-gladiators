@@ -6,9 +6,9 @@
 uv = "latest"
 "pipx:reuse" = "latest"
 "aqua:tinygo-org/tinygo" = "0.40.1"
-"github:firefly-zero/firefly-cli"= { version = "0.15.8", rename_exe = "ff" }
-"github:firefly-zero/firefly-emulator" = "0.9.8"
-golangci-lint = "2.8.0"
+"github:firefly-zero/firefly-cli"= { version = "0.16.0", rename_exe = "ff" }
+"github:firefly-zero/firefly-emulator" = "0.10.0"
+golangci-lint = "2.10.1"
 
 [tasks.build]
 description = "Build the game using firefly CLI"
