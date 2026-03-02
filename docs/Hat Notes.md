@@ -1,24 +1,32 @@
+<!--
+SPDX-FileCopyrightText: 2026 Kalle Fagerberg
+SPDX-FileCopyrightText: 2026 JusJuice
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 Adventurer Cap
+
 - "if u understand dis reference, it's time to get ur thyroid checked."
-Noble Crown
+  Noble Crown
 - "fireflies don't have queens... you can change that."
-Wizard Cap
+  Wizard Cap
 - "Well one of us is goin 2 have 2 change"
-Wooly Hat
+  Wooly Hat
 - "Mmmm... very hygge."
-Tophat
+  Tophat
 - "Rabbit not included."
-Flower
+  Flower
 - "wdym these grow 4 free in the meadow?"
-Witch Hat
+  Witch Hat
 - "definitely not stolen from da witch who turns ppl into frogs."
-Unicorn Horn
+  Unicorn Horn
 - "we r out of narwhal horns, sry m8"
-Cat Ears
+  Cat Ears
 - "you know, like nya?"
-Lucky Hat
+  Lucky Hat
 - "borrowed from a very tiny Irish man."
-Duck Hat
+  Duck Hat
 - "quack or wot ever"
-Apple
+  Apple
 - "if i had hands i could shoot that off ur head."

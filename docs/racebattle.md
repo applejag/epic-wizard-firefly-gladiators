@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2026 Kalle Fagerberg
+SPDX-FileCopyrightText: 2026 JusJuice
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 # Racebattle
 
 Mockup:
