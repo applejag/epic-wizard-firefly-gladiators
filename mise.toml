@@ -26,7 +26,7 @@ description = "Build with tinygo"
 run = """
     tinygo build -target target.json -buildmode c-shared -o dist/ewfg.wasm .
 """
-sources = ['**/*.go', 'go.mod', 'go.sum', 'assets/**']
+sources = ['**/*.go', 'go.mod', 'go.sum', 'assets/**', 'target.json']
 outputs = ['dist/ewfg.wasm']
 
 [tasks."debug:build:opt"]
@@ -67,20 +67,20 @@ depends = ['debug:build:tinygo', 'debug:build:opt']
 
 [tasks."debug:wasm2wat"]
 description = "Build the game and output the WAT"
-run = """
-    wasm2wat dist/ewfg.wasm --output=dist/ewfg.wat
-    wasm2wat dist/ewfg-opt.wasm --output=dist/ewfg-opt.wat
-"""
+run = [
+    "wasm2wat dist/ewfg.wasm --output=dist/ewfg.wat",
+    "wasm2wat dist/ewfg-opt.wasm --output=dist/ewfg-opt.wat",
+]
 depends = ['debug:build']
 sources = ['dist/ewfg.wasm', 'dist/ewfg-opt.wasm']
 outputs = ['dist/ewfg.wat', 'dist/ewfg-opt.wat']
 
 [tasks."debug:wasm-decompile"]
 description = "Build the game and decompile into the .dcmp pseudo-language"
-run = """
-    wasm-decompile dist/ewfg.wasm --output=dist/ewfg.dcmp
-    wasm-decompile dist/ewfg-opt.wasm --output=dist/ewfg-opt.dcmp
-"""
+run = [
+    "wasm-decompile dist/ewfg.wasm --output=dist/ewfg.dcmp --enable-all",
+    "wasm-decompile dist/ewfg-opt.wasm --output=dist/ewfg-opt.dcmp --enable-all",
+]
 depends = ['debug:build']
 sources = ['dist/ewfg.wasm', 'dist/ewfg-opt.wasm']
 outputs = ['dist/ewfg.dcmp', 'dist/ewfg-opt.dcmp']
