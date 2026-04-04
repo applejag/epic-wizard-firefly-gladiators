@@ -17,7 +17,7 @@ type InputState struct {
 }
 
 func (i *InputState) Boot() {
-	i.Me = firefly.GetMe()
+	i.Me = firefly.Combined
 }
 
 func (i *InputState) Update() {
