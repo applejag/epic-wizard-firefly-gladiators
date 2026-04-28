@@ -1,13 +1,18 @@
 package field
 
 import (
-	"strconv"
-	"strings"
+	"bytes"
 
 	"github.com/applejag/epic-wizard-firefly-gladiators/assets"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/state"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/util"
 	"github.com/firefly-zero/firefly-go/firefly"
+)
+
+var (
+	statsFireflyNameBuf [util.LongestPossibleName + 10]byte
+	statsSpeedBuf       [10]byte
+	statsNimblenessBuf  [10]byte
 )
 
 type StatsPage struct {
@@ -16,9 +21,9 @@ type StatsPage struct {
 	playTournamentBtn Button
 	focused           StatsButton
 
-	cachedFireflyNameText string
-	cachedSpeedText       string
-	cachedNimblenessText  string
+	cachedFireflyName []byte
+	cachedSpeed       []byte
+	cachedNimbleness  []byte
 }
 
 func (p *StatsPage) Boot() {
@@ -30,9 +35,9 @@ func (p *StatsPage) Boot() {
 }
 
 func (p *StatsPage) OnOpen() {
-	p.cachedFireflyNameText = ""
-	p.cachedSpeedText = ""
-	p.cachedNimblenessText = ""
+	p.cachedFireflyName = nil
+	p.cachedSpeed = nil
+	p.cachedNimbleness = nil
 }
 
 func (p *StatsPage) Update(modal *FireflyModal) {
@@ -82,40 +87,45 @@ func (p *StatsPage) Render(innerScrollPoint firefly.Point, fireflyID int) {
 	}
 	data := state.Game.Fireflies[dataIndex]
 
-	text := p.cachedFireflyNameText
-	if text == "" {
-		var buf [util.LongestPossibleName]byte
-		text = util.WordWrap(
-			string(buf[:data.Name.WriteInto(buf[:])]),
+	nameBytes := p.cachedFireflyName
+	if nameBytes == nil {
+		var nameBuf [util.LongestPossibleName]byte
+		nameLen := data.Name.WriteInto(nameBuf[:])
+		wrappedLen := util.WriteWrapped(
+			statsFireflyNameBuf[:],
+			nameBuf[:nameLen],
 			scrollInnerWidth,
 			assets.FontEG_6x9.CharWidth(),
 		)
-		p.cachedFireflyNameText = text
+		nameBytes = statsFireflyNameBuf[:wrappedLen]
+		p.cachedFireflyName = nameBytes
 	}
 
-	speedText := p.cachedSpeedText
-	if speedText == "" {
-		speedText = strconv.Itoa(data.Speed)
-		p.cachedSpeedText = speedText
+	speedBytes := p.cachedSpeed
+	if speedBytes == nil {
+		n := util.FormatIntInto(statsSpeedBuf[:], data.Speed)
+		speedBytes = statsSpeedBuf[:n]
+		p.cachedSpeed = speedBytes
 	}
-	nimblenessText := p.cachedNimblenessText
-	if nimblenessText == "" {
-		nimblenessText = strconv.Itoa(data.Nimbleness)
-		p.cachedNimblenessText = speedText
+	nimblenessBytes := p.cachedNimbleness
+	if nimblenessBytes == nil {
+		n := util.FormatIntInto(statsNimblenessBuf[:], data.Nimbleness)
+		nimblenessBytes = statsNimblenessBuf[:n]
+		p.cachedNimbleness = nimblenessBytes
 	}
 
 	charHeight := assets.FontEG_6x9.CharHeight()
 
 	textPos := innerScrollPoint.Add(firefly.P(0, 10))
-	assets.FontEG_6x9.Draw(text, textPos, firefly.ColorDarkGray)
-	textHeight := charHeight * (strings.Count(text, "\n") + 1)
+	assets.FontEG_6x9.DrawBytes(nameBytes, textPos, firefly.ColorDarkGray)
+	textHeight := charHeight * (bytes.Count(nameBytes, []byte("\n")) + 1)
 
 	speedPoint := textPos.Add(firefly.P(2, textHeight))
-	assets.FontEG_6x9.Draw(speedText, speedPoint, firefly.ColorBlack)
+	assets.FontEG_6x9.DrawBytes(speedBytes, speedPoint, firefly.ColorBlack)
 	assets.FontPico8_4x6.Draw("SPEED", speedPoint.Add(firefly.P(0, charHeight)), firefly.ColorGray)
 
 	nimblenessPoint := speedPoint.Add(firefly.P(32, 0))
-	assets.FontEG_6x9.Draw(nimblenessText, nimblenessPoint, firefly.ColorBlack)
+	assets.FontEG_6x9.DrawBytes(nimblenessBytes, nimblenessPoint, firefly.ColorBlack)
 	assets.FontPico8_4x6.Draw("NIMBLE", nimblenessPoint.Add(firefly.P(0, charHeight)), firefly.ColorGray)
 
 	rectPoint := textPos.Add(firefly.P(64, textHeight+4-charHeight))

@@ -2,51 +2,6 @@ package util
 
 import "testing"
 
-func TestConcatInto(t *testing.T) {
-	tests := []struct {
-		name    string
-		buf     []byte
-		strings []string
-		want    string
-	}{
-		{
-			name:    "no strings nil buffer",
-			buf:     nil,
-			strings: nil,
-			want:    "",
-		},
-		{
-			name:    "no strings empty buffer",
-			buf:     make([]byte, 0),
-			strings: nil,
-			want:    "",
-		},
-		{
-			name:    "just big enough buffer",
-			buf:     make([]byte, 10),
-			strings: []string{"hello", "world"},
-			want:    "helloworld",
-		},
-		{
-			name:    "bigger buffer",
-			buf:     make([]byte, 14),
-			strings: []string{"hello", "world"},
-			want:    "helloworld",
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			written := ConcatInto(test.buf, test.strings...)
-			got := string(test.buf[:written])
-			if got != test.want {
-				t.Errorf("wrong result\nwant: %q (len=%d)\ngot:  %q (len=%d)", test.want, len(test.want), got, len(got))
-			}
-			t.Logf("buf: %q", test.buf)
-		})
-	}
-}
-
 func TestFormatIntInto(t *testing.T) {
 	tests := []struct {
 		name string

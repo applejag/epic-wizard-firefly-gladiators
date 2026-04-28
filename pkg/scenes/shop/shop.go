@@ -66,7 +66,7 @@ func (s *Shop) handleInputButtons(justPressed firefly.Buttons) {
 
 		var buf [len("buy 1x: ") + LongestItemKind]byte
 		written := util.ConcatInto(buf[:], "buy 1x: ", item.Kind.String())
-		util.LogDebugBytes(buf[:written])
+		firefly.LogDebugBytes(buf[:written])
 
 		switch item.Kind {
 		case ItemDrug:

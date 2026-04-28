@@ -86,7 +86,7 @@ func (g *GameState) Save() {
 	n := copy(buf[0:], "saved game, size: ")
 	n += util.FormatIntInto(buf[n:], len(save))
 	n += copy(buf[n:], " B")
-	util.LogDebugBytes(buf[:n])
+	firefly.LogDebugBytes(buf[:n])
 }
 
 func (g *GameState) HasSave() bool {
@@ -94,7 +94,9 @@ func (g *GameState) HasSave() bool {
 }
 
 func (g *GameState) LoadSave() bool {
-	file := firefly.LoadFile("save", nil)
+	var saveBuf [100]byte
+	size := firefly.GetFileSize("save")
+	file := firefly.LoadFile("save", saveBuf[:size])
 	if !file.Exists() {
 		return false
 	}

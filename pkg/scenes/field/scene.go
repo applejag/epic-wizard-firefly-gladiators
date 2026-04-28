@@ -12,6 +12,8 @@ import (
 	"github.com/firefly-zero/firefly-go/firefly"
 )
 
+var fieldFireflyNameBuf [util.LongestPossibleName]byte
+
 type Scene struct {
 	fireflies []Firefly
 	modal     FireflyModal
@@ -20,8 +22,8 @@ type Scene struct {
 	shopButtonAnim util.AnimatedSheet
 	focusedID      int
 
-	cachedFireflyNameText string
-	fireflyIDs            []int
+	cachedFireflyName []byte
+	fireflyIDs        []int
 }
 
 func (s *Scene) Boot() {
@@ -121,19 +123,22 @@ func (s *Scene) renderFocused(f *Firefly) {
 	}
 	data := state.Game.Fireflies[dataIndex]
 
-	text := s.cachedFireflyNameText
-	if text == "" {
-		var buf [util.LongestPossibleName]byte
-		text = util.WordWrap(
-			string(buf[:data.Name.WriteInto(buf[:])]),
+	nameBytes := s.cachedFireflyName
+	if nameBytes == nil {
+		var nameBuf [util.LongestPossibleName]byte
+		nameLen := data.Name.WriteInto(nameBuf[:])
+		wrappedLen := util.WriteWrapped(
+			fieldFireflyNameBuf[:],
+			nameBuf[:nameLen],
 			firefly.Width-75,
 			assets.FontEG_6x9.CharWidth(),
 		)
-		s.cachedFireflyNameText = text
+		nameBytes = fieldFireflyNameBuf[:wrappedLen]
+		s.cachedFireflyName = nameBytes
 	}
 
-	assets.FontEG_6x9.Draw(text, firefly.P(73, 12), firefly.ColorDarkGray)
-	assets.FontEG_6x9.Draw(text, firefly.P(73, 11), firefly.ColorWhite)
+	assets.FontEG_6x9.DrawBytes(nameBytes, firefly.P(73, 12), firefly.ColorDarkGray)
+	assets.FontEG_6x9.DrawBytes(nameBytes, firefly.P(73, 11), firefly.ColorWhite)
 }
 
 func (s *Scene) FindFireflyByID(id int) int {
@@ -156,7 +161,7 @@ func (s *Scene) OnSceneEnter() {
 	s.fireflies = slices.DeleteFunc(s.fireflies, func(f Firefly) bool {
 		return state.Game.FindFireflyByID(f.id) == -1
 	})
-	s.cachedFireflyNameText = ""
+	s.cachedFireflyName = nil
 	s.fireflyIDs = make([]int, len(s.fireflies))
 	for i := range s.fireflies {
 		s.fireflyIDs[i] = s.fireflies[i].id

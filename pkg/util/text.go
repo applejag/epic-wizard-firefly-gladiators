@@ -1,41 +1,8 @@
 package util
 
 import (
-	"bytes"
-	"strings"
-	"unsafe"
-
 	"github.com/firefly-zero/firefly-go/firefly"
 )
-
-func WordWrap(s string, maxWidth, charWidth int) string {
-	if len(s)*charWidth <= maxWidth {
-		return s
-	}
-	var buf [128]byte
-	sb := bytes.NewBuffer(buf[:])
-	sb.Reset()
-	lineWidth := 0
-
-	for word := range strings.FieldsSeq(s) {
-		wordWidth := len(word) * charWidth
-		if lineWidth == 0 {
-			lineWidth += wordWidth
-			sb.WriteString(word)
-			continue
-		}
-		wordWidthPlusSpace := wordWidth + charWidth
-		if lineWidth+wordWidthPlusSpace > maxWidth {
-			sb.WriteByte('\n')
-			lineWidth = wordWidth
-		} else {
-			sb.WriteByte(' ')
-			lineWidth += wordWidthPlusSpace
-		}
-		sb.WriteString(word)
-	}
-	return sb.String()
-}
 
 func DrawTextRightAligned(font firefly.Font, text string, right firefly.Point, color firefly.Color) {
 	width := font.CharWidth() * len(text)
@@ -45,28 +12,6 @@ func DrawTextRightAligned(font firefly.Font, text string, right firefly.Point, c
 func DrawTextCentered(font firefly.Font, text string, center firefly.Point, color firefly.Color) {
 	width := font.CharWidth() * len(text)
 	font.Draw(text, center.Add(firefly.P(-width/2, 0)), color)
-}
-
-// ConcatInto writes the given strings into a buffer with zero allocations.
-//
-// Returns the number of bytes written. Intended usage:
-//
-//	var buf [10]
-//	written := ConcatInto(buf[:], "hello", "world")
-//	foobar(string(buf[:written]))
-//
-// Panics if "buf" is too small.
-func ConcatInto(buf []byte, parts ...string) int {
-	written := 0
-	for i := range parts {
-		partBytes := unsafe.Slice(unsafe.StringData(parts[i]), len(parts[i]))
-		if len(partBytes) > len(buf) {
-			panic("ConcatBuf: buffer is not big enough")
-		}
-		written += copy(buf, partBytes)
-		buf = buf[len(partBytes):]
-	}
-	return written
 }
 
 func FormatIntInto(buf []byte, num int) int {

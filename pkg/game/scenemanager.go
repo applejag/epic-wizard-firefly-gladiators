@@ -38,7 +38,7 @@ func (s *SceneManager) SwitchScene(scene scenes.Scene) {
 	written := util.ConcatInto(buf[:],
 		"switching scene from '", prev.String(), "' to '", scene.String(), "'",
 	)
-	util.LogDebugBytes(buf[:written])
+	firefly.LogDebugBytes(buf[:written])
 }
 
 func (s *SceneManager) SwitchSceneNoTransition(scene scenes.Scene) {
@@ -52,7 +52,7 @@ func (s *SceneManager) SwitchSceneNoTransition(scene scenes.Scene) {
 	written := util.ConcatInto(buf[:],
 		"switching scene from '", prev.String(), "' to '", scene.String(), "' (without transition)",
 	)
-	util.LogDebugBytes(buf[:written])
+	firefly.LogDebugBytes(buf[:written])
 }
 
 func (s *SceneManager) Boot() {
