@@ -123,7 +123,7 @@ func (loader *Loader) AssertBufferFullyUtilized() {
 	var buf [100]byte
 	n := copy(buf[:], "All assets loaded. Total size: ")
 	n += util.FormatIntInto(buf[n:], loader.used)
-	firefly.LogDebug(string(buf[:n]))
+	firefly.LogDebugBytes(buf[:n])
 
 	if len(loader.buf) > 0 {
 		var buf [100]byte
@@ -132,8 +132,7 @@ func (loader *Loader) AssertBufferFullyUtilized() {
 		n += copy(buf[n:], "]byte, but got [")
 		n += util.FormatIntInto(buf[n:], loader.used+len(loader.buf))
 		n += copy(buf[n:], "]byte")
-		err := string(buf[:n])
-		firefly.LogError(err)
+		firefly.LogErrorBytes(buf[:n])
 		panic("assets.Loader: buffer was not fully utilized")
 	}
 }

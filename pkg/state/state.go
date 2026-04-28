@@ -1,8 +1,6 @@
 package state
 
 import (
-	"strconv"
-
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/util"
 	"github.com/applejag/firefly-go-math/ffrand"
 
@@ -80,11 +78,11 @@ func (g *GameState) Save() {
 	}
 	firefly.DumpFile("save", save)
 
-	var buf [len("saved game, size: ") + 10 + len(" B")]byte
-	index := copy(buf[0:], "saved game, size: ")
-	index += util.FormatIntInto(buf[index:], len(save))
-	index += copy(buf[index:], " B")
-	util.LogDebugBytes(buf[:index])
+	var buf [32]byte
+	n := copy(buf[0:], "saved game, size: ")
+	n += util.FormatIntInto(buf[n:], len(save))
+	n += copy(buf[n:], " B")
+	util.LogDebugBytes(buf[:n])
 }
 
 func (g *GameState) HasSave() bool {
@@ -102,7 +100,11 @@ func (g *GameState) LoadSave() bool {
 		return false
 	}
 
-	firefly.LogDebug("loaded saved game, size: " + strconv.Itoa(len(file)) + " B")
+	var buf [42]byte
+	n := copy(buf[0:], "loaded saved game, size: ")
+	n += util.FormatIntInto(buf[n:], len(file))
+	n += copy(buf[n:], " B")
+	firefly.LogDebugBytes(buf[:n])
 	return true
 }
 
