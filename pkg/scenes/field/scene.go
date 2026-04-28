@@ -12,7 +12,10 @@ import (
 	"github.com/firefly-zero/firefly-go/firefly"
 )
 
-var fieldFireflyNameBuf [util.LongestPossibleName]byte
+var (
+	fieldFireflyNameBuf [util.LongestPossibleName]byte
+	fieldFireflyIDsBuf  [state.MaxFireflyCount]int
+)
 
 type Scene struct {
 	fireflies []Firefly
@@ -162,7 +165,7 @@ func (s *Scene) OnSceneEnter() {
 		return state.Game.FindFireflyByID(f.id) == -1
 	})
 	s.cachedFireflyName = nil
-	s.fireflyIDs = make([]int, len(s.fireflies))
+	s.fireflyIDs = fieldFireflyIDsBuf[:len(s.fireflies)]
 	for i := range s.fireflies {
 		s.fireflyIDs[i] = s.fireflies[i].id
 	}
