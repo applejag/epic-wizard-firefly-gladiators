@@ -2,6 +2,54 @@ package util
 
 import "testing"
 
+func TestTrimIndexRightByte(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  string
+		cutset byte
+		want   string
+	}{
+		{name: "empty", input: "", cutset: 0, want: ""},
+		{name: "no trimming", input: "hello", cutset: ' ', want: "hello"},
+		{name: "trim once", input: " hello ", cutset: ' ', want: " hello"},
+		{name: "trim multiple", input: "    hello    ", cutset: ' ', want: "    hello"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			index := TrimIndexRightByte(test.input, test.cutset)
+			got := string(test.input[:index])
+			if got != test.want {
+				t.Errorf("wrong result\nwant: %q (len=%d)\ngot:  %q (len=%d)", test.want, len(test.want), got, len(got))
+			}
+		})
+	}
+}
+
+func TestTrimIndexLeftByte(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  string
+		cutset byte
+		want   string
+	}{
+		{name: "empty", input: "", cutset: 0, want: ""},
+		{name: "no trimming", input: "hello", cutset: ' ', want: "hello"},
+		{name: "trim once", input: " hello ", cutset: ' ', want: "hello "},
+		{name: "trim multiple", input: "    hello    ", cutset: ' ', want: "hello    "},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			index := TrimIndexLeftByte(test.input, test.cutset)
+			got := string(test.input[index:])
+			if got != test.want {
+				t.Errorf("wrong result\nwant: %q (len=%d)\ngot:  %q (len=%d)", test.want, len(test.want), got, len(got))
+			}
+		})
+	}
+}
+
 func TestWriteWrapped(t *testing.T) {
 	tests := []struct {
 		name      string
