@@ -11,6 +11,13 @@ import (
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/util"
 )
 
+var (
+	ErrSaveInvalidFileMarker = errors.New("file is not a valid game save")
+	ErrSaveUnexpectedField   = errors.New("unexpected game state field")
+	ErrSaveTooManyFireflies  = errors.New("save contains too many fireflies")
+	ErrSaveInvalidField      = errors.New("save file is invalid, perhaps corrupted")
+)
+
 type FieldError struct {
 	Field string
 	Err   error
@@ -51,17 +58,14 @@ const (
 	FieldStateMoney              FieldState = 4
 )
 
-var (
-	_ encoding.BinaryAppender    = &GameState{}
-	_ encoding.BinaryUnmarshaler = &GameState{}
-)
+var _ encoding.BinaryUnmarshaler = &GameState{}
 
 // UnmarshalBinary implements [encoding.BinaryUnmarshaler].
 func (g *GameState) UnmarshalBinary(data []byte) error {
 	buf := bytes.NewBuffer(data)
 
 	if marker, err := buf.ReadByte(); err != nil || marker != FileMarker {
-		return errors.New("invalid save file marker")
+		return ErrSaveInvalidFileMarker
 	}
 
 	for {
@@ -77,63 +81,58 @@ func (g *GameState) UnmarshalBinary(data []byte) error {
 		case FieldStateBattlesPlayedTotal:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "GameState.BattlesPlayedTotal", Err: err}
+				return ErrSaveInvalidField
 			}
 			g.BattlesPlayedTotal = int(val)
 		case FieldStateBattlesWonTotal:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "GameState.BattlesWonTotal", Err: err}
+				return ErrSaveInvalidField
 			}
 			g.BattlesWonTotal = int(val)
 		case FieldStateMoney:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "GameState.Money", Err: err}
+				return ErrSaveInvalidField
 			}
 			g.Money = int(val)
 		case FieldStateFireflies:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "GameState.Fireflies.len", Err: err}
+				return ErrSaveInvalidField
 			}
-			if val > 99 {
-				return FieldError{Field: "GameState.Fireflies.len", Err: errors.New("too many fireflies")}
+			if int(val) > cap(g.Fireflies) {
+				return ErrSaveTooManyFireflies
 			}
-			g.Fireflies = make([]Firefly, val)
+			clear(g.Fireflies)
+			g.Fireflies = g.Fireflies[:val]
 			for i := range int(val) {
 				if err := g.Fireflies[i].UnmarshalBinaryBuf(buf); err != nil {
-					return IndexedFieldError{Field: "GameState.Fireflies", Index: i, Err: err}
+					return err
 				}
 			}
 		default:
-			return errors.New("unexpected game state field")
+			return ErrSaveUnexpectedField
 		}
 	}
 }
 
-// AppendBinary implements [encoding.BinaryAppender].
-func (g *GameState) AppendBinary(b []byte) ([]byte, error) {
-	b = append(b, FileMarker)
+func (g *GameState) WriteToBuf(b []byte) int {
+	n := writeByte(b[0:], FileMarker)
 
-	b = append(b, byte(FieldStateFireflies))
-	b = binary.AppendUvarint(b, uint64(len(g.Fireflies)))
+	n += writeByte(b[n:], byte(FieldStateFireflies))
+	n += binary.PutUvarint(b[n:], uint64(len(g.Fireflies)))
 	for i := range g.Fireflies {
-		var err error
-		b, err = g.Fireflies[i].AppendBinary(b)
-		if err != nil {
-			return b, IndexedFieldError{Field: "GameState.Fireflies", Index: i, Err: err}
-		}
+		n += g.Fireflies[i].WriteToBuf(b[n:])
 	}
 
-	b = append(b, byte(FieldStateBattlesWonTotal))
-	b = binary.AppendUvarint(b, uint64(g.BattlesWonTotal))
-	b = append(b, byte(FieldStateBattlesPlayedTotal))
-	b = binary.AppendUvarint(b, uint64(g.BattlesPlayedTotal))
-	b = append(b, byte(FieldStateMoney))
-	b = binary.AppendUvarint(b, uint64(g.Money))
-
-	return b, nil
+	n += writeByte(b[n:], byte(FieldStateBattlesWonTotal))
+	n += binary.PutUvarint(b[n:], uint64(g.BattlesWonTotal))
+	n += writeByte(b[n:], byte(FieldStateBattlesPlayedTotal))
+	n += binary.PutUvarint(b[n:], uint64(g.BattlesPlayedTotal))
+	n += writeByte(b[n:], byte(FieldStateMoney))
+	n += binary.PutUvarint(b[n:], uint64(g.Money))
+	return n
 }
 
 type FieldFirefly byte
@@ -163,69 +162,73 @@ func (f *Firefly) UnmarshalBinaryBuf(buf *bytes.Buffer) error {
 		case FieldFireflyID:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "Firefly.ID", Err: err}
+				return ErrSaveInvalidField
 			}
 			f.ID = int(val)
 		case FieldFireflyName:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "Firefly.Name", Err: err}
+				return ErrSaveInvalidField
 			}
 			f.Name = util.Name(val)
 		case FieldFireflySpeed:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "Firefly.Speed", Err: err}
+				return ErrSaveInvalidField
 			}
 			f.Speed = int(val)
 		case FieldFireflyNimbleness:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "Firefly.Nimbleness", Err: err}
+				return ErrSaveInvalidField
 			}
 			f.Nimbleness = int(val)
 		case FieldFireflyBattlesPlayed:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "Firefly.BattlesPlayed", Err: err}
+				return ErrSaveInvalidField
 			}
 			f.BattlesPlayed = int(val)
 		case FieldFireflyBattlesWon:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "Firefly.BattlesWon", Err: err}
+				return ErrSaveInvalidField
 			}
 			f.BattlesWon = int(val)
 		case FieldFireflyHat:
 			val, err := binary.ReadUvarint(buf)
 			if err != nil {
-				return FieldError{Field: "Firefly.Hat", Err: err}
+				return ErrSaveInvalidField
 			}
 			f.Hat = int(val)
 		case FieldFireflyEOF:
 			return nil
 		default:
-			return errors.New("unexpected firefly field")
+			return ErrSaveUnexpectedField
 		}
 	}
 }
 
-// AppendBinary implements [encoding.BinaryAppender].
-func (f *Firefly) AppendBinary(b []byte) ([]byte, error) {
-	b = append(b, byte(FieldFireflyID))
-	b = binary.AppendUvarint(b, uint64(f.ID))
-	b = append(b, byte(FieldFireflyName))
-	b = binary.AppendUvarint(b, uint64(f.Name))
-	b = append(b, byte(FieldFireflySpeed))
-	b = binary.AppendUvarint(b, uint64(f.Speed))
-	b = append(b, byte(FieldFireflyNimbleness))
-	b = binary.AppendUvarint(b, uint64(f.Nimbleness))
-	b = append(b, byte(FieldFireflyBattlesPlayed))
-	b = binary.AppendUvarint(b, uint64(f.BattlesPlayed))
-	b = append(b, byte(FieldFireflyBattlesWon))
-	b = binary.AppendUvarint(b, uint64(f.BattlesWon))
-	b = append(b, byte(FieldFireflyHat))
-	b = binary.AppendUvarint(b, uint64(f.Hat))
+func (f *Firefly) WriteToBuf(b []byte) int {
+	n := writeByte(b[0:], byte(FieldFireflyID))
+	n += binary.PutUvarint(b[n:], uint64(f.ID))
+	n += writeByte(b[n:], byte(FieldFireflyName))
+	n += binary.PutUvarint(b[n:], uint64(f.Name))
+	n += writeByte(b[n:], byte(FieldFireflySpeed))
+	n += binary.PutUvarint(b[n:], uint64(f.Speed))
+	n += writeByte(b[n:], byte(FieldFireflyNimbleness))
+	n += binary.PutUvarint(b[n:], uint64(f.Nimbleness))
+	n += writeByte(b[n:], byte(FieldFireflyBattlesPlayed))
+	n += binary.PutUvarint(b[n:], uint64(f.BattlesPlayed))
+	n += writeByte(b[n:], byte(FieldFireflyBattlesWon))
+	n += binary.PutUvarint(b[n:], uint64(f.BattlesWon))
+	n += writeByte(b[n:], byte(FieldFireflyHat))
+	n += binary.PutUvarint(b[n:], uint64(f.Hat))
+	n += writeByte(b[n:], byte(FieldFireflyEOF))
+	return n
+}
 
-	return append(b, byte(FieldFireflyEOF)), nil
+func writeByte(buf []byte, b byte) int {
+	buf[0] = b
+	return 1
 }

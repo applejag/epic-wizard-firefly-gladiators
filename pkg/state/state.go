@@ -7,11 +7,11 @@ import (
 	"github.com/firefly-zero/firefly-go/firefly"
 )
 
+const MaxFireflyCount = 16
+
 var (
 	nextID int
-	Game   = GameState{
-		InRaceBattle: map[firefly.Peer]Firefly{},
-	}
+	Game   = NewGameState()
 )
 
 type Firefly struct {
@@ -32,6 +32,13 @@ type GameState struct {
 
 	// Not saved, it's only ephemeral data
 	InRaceBattle map[firefly.Peer]Firefly
+}
+
+func NewGameState() GameState {
+	return GameState{
+		Fireflies:    make([]Firefly, 0, MaxFireflyCount),
+		InRaceBattle: make(map[firefly.Peer]Firefly, MaxFireflyCount),
+	}
 }
 
 func (g *GameState) AddFirefly() int {
@@ -71,11 +78,8 @@ func (g *GameState) RemoveMyFireflyFromRaceBattle() {
 
 func (g *GameState) Save() {
 	var saveBuf [100]byte
-	save, err := g.AppendBinary(saveBuf[:0])
-	if err != nil {
-		firefly.LogError("failed to save: " + err.Error())
-		return
-	}
+	written := g.WriteToBuf(saveBuf[:])
+	save := saveBuf[:written]
 	firefly.DumpFile("save", save)
 
 	var buf [32]byte
@@ -96,7 +100,10 @@ func (g *GameState) LoadSave() bool {
 	}
 	g.Reset()
 	if err := g.UnmarshalBinary(file); err != nil {
-		firefly.LogError("failed to load save: " + err.Error())
+		var buf [100]byte
+		n := copy(buf[0:], "failed to load save: ")
+		n += copy(buf[n:], err.Error())
+		firefly.LogErrorBytes(buf[:n])
 		return false
 	}
 
@@ -109,5 +116,9 @@ func (g *GameState) LoadSave() bool {
 }
 
 func (g *GameState) Reset() {
-	*g = GameState{InRaceBattle: map[firefly.Peer]Firefly{}}
+	clear(g.InRaceBattle)
+	*g = GameState{
+		InRaceBattle: g.InRaceBattle,
+		Fireflies:    g.Fireflies[:0],
+	}
 }
