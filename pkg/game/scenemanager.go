@@ -70,26 +70,29 @@ func (s *SceneManager) Boot() {
 }
 
 func (s *SceneManager) Update() {
-	if s.nextScene == s.currentScene && s.Transition.IsPaused() {
-		// intentionally coded this way with enums because I want to avoid using
-		// interfaces or function pointers for the heaviest functions like
-		// Update and Render
-		switch s.currentScene {
-		case scenes.Insectarium:
-			s.Insectarium.Update()
-		case scenes.Field:
-			s.Field.Update()
-		case scenes.MainMenu:
-			s.MainMenu.Update()
-		case scenes.RacingBattle, scenes.RacingTraining:
-			s.RaceBattle.Update()
-		case scenes.Shop:
-			s.Shop.Update()
+	if !s.Transition.IsPaused() {
+		s.Transition.Update()
+		if s.Transition.IsPaused() {
+			s.currentScene = s.nextScene
+		} else {
+			// still paused
+			return
 		}
 	}
-	s.Transition.Update()
-	if s.currentScene != s.nextScene && s.Transition.IsPaused() {
-		s.currentScene = s.nextScene
+	// intentionally coded this way with enums because I want to avoid using
+	// interfaces or function pointers for the heaviest functions like
+	// Update and Render
+	switch s.currentScene {
+	case scenes.Insectarium:
+		s.Insectarium.Update()
+	case scenes.Field:
+		s.Field.Update()
+	case scenes.MainMenu:
+		s.MainMenu.Update()
+	case scenes.RacingBattle, scenes.RacingTraining:
+		s.RaceBattle.Update()
+	case scenes.Shop:
+		s.Shop.Update()
 	}
 }
 
