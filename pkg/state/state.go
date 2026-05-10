@@ -10,8 +10,9 @@ import (
 const MaxFireflyCount = 16
 
 var (
-	nextID int
-	Game   = NewGameState()
+	nextID      int
+	Game        = NewGameState()
+	loadSaveBuf [100]byte // cannot load save files bigger than this buffer
 )
 
 type Firefly struct {
@@ -93,10 +94,20 @@ func (g *GameState) HasSave() bool {
 	return firefly.FileExists("save")
 }
 
+//go:noinline
 func (g *GameState) LoadSave() bool {
-	var saveBuf [100]byte
 	size := firefly.GetFileSize("save")
-	file := firefly.LoadFile("save", saveBuf[:size])
+	if size > len(loadSaveBuf) {
+		var buf [100]byte
+		n := copy(buf[0:], "failed to load save: file was too big, max is ")
+		n += util.FormatIntInto(buf[n:], len(loadSaveBuf))
+		n += copy(buf[n:], " B, but was ")
+		n += util.FormatIntInto(buf[n:], size)
+		n += copy(buf[n:], " B")
+		firefly.LogErrorBytes(buf[:n])
+		return false
+	}
+	file := firefly.LoadFile("save", loadSaveBuf[:size])
 	if !file.Exists() {
 		return false
 	}
