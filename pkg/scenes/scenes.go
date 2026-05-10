@@ -13,6 +13,8 @@ var AllScenes = []Scene{
 	Shop,
 	RacingBattle,
 	RacingTraining,
+
+	RacingBattle2,
 }
 
 type Scene byte
@@ -24,6 +26,10 @@ const (
 	Shop
 	RacingBattle
 	RacingTraining
+
+	// New racebattle design
+	// Will replace the old racebattle eventually
+	RacingBattle2
 )
 
 func (s Scene) String() string {
@@ -40,6 +46,8 @@ func (s Scene) String() string {
 		return "racing training"
 	case Shop:
 		return "shop"
+	case RacingBattle2:
+		return "racing battle (new)"
 	default:
 		panic("unexpected Scene")
 	}

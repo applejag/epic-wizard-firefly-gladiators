@@ -7,6 +7,7 @@ import (
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/scenes/insectarium"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/scenes/mainmenu"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/scenes/racebattle"
+	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/scenes/racebattle2"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/scenes/shop"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/util"
 
@@ -23,6 +24,7 @@ type SceneManager struct {
 	Insectarium insectarium.Scene
 	Shop        shop.Scene
 	Field       field.Scene
+	RaceBattle2 racebattle2.Scene
 
 	UI UI
 }
@@ -66,6 +68,7 @@ func (s *SceneManager) Boot() {
 	s.Field.Boot()
 	s.MainMenu.Boot()
 	s.RaceBattle.Boot()
+	s.RaceBattle2.Boot()
 	s.Shop.Boot()
 }
 
@@ -91,6 +94,8 @@ func (s *SceneManager) Update() {
 		s.MainMenu.Update()
 	case scenes.RacingBattle, scenes.RacingTraining:
 		s.RaceBattle.Update()
+	case scenes.RacingBattle2:
+		s.RaceBattle2.Update()
 	case scenes.Shop:
 		s.Shop.Update()
 	}
@@ -110,6 +115,8 @@ func (s *SceneManager) Render() {
 		s.MainMenu.Render()
 	case scenes.RacingBattle, scenes.RacingTraining:
 		s.RaceBattle.Render()
+	case scenes.RacingBattle2:
+		s.RaceBattle2.Render()
 	case scenes.Shop:
 		s.Shop.Render()
 	}
@@ -128,6 +135,8 @@ func (s *SceneManager) onSceneSwitch(scene scenes.Scene) {
 		s.RaceBattle.OnSceneEnter(2)
 	case scenes.RacingTraining:
 		s.RaceBattle.OnSceneEnter(1)
+	case scenes.RacingBattle2:
+		s.RaceBattle2.OnSceneEnter()
 	case scenes.Shop:
 		s.Shop.OnSceneEnter()
 	}
