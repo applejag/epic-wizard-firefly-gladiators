@@ -1,7 +1,7 @@
 package game
 
 import (
-	"strings"
+	"bytes"
 
 	"github.com/applejag/epic-wizard-firefly-gladiators/assets"
 	"github.com/applejag/epic-wizard-firefly-gladiators/pkg/state"
@@ -9,11 +9,14 @@ import (
 	"github.com/firefly-zero/firefly-go/firefly"
 )
 
+var (
+	moneyTextBuf      [4]byte
+	firefliesCountBuf [2]byte
+)
+
 type UI struct {
 	cachedMoneyValue     int
-	cachedMoneyText      string
 	cachedFirefliesValue int
-	cachedFirefliesText  string
 }
 
 func (u *UI) Render() {
@@ -23,47 +26,42 @@ func (u *UI) Render() {
 	}
 	assets.CashBanner.Draw(firefly.P(2, 2))
 
-	moneyText := u.cachedMoneyText
 	money := min(state.Game.Money, 9999)
-	if moneyText == "" || money != u.cachedMoneyValue {
-		moneyText = formatPaddedInt(money, 4)
-		u.cachedMoneyText = moneyText
+	if moneyTextBuf[0] == 0 || money != u.cachedMoneyValue {
+		formatPaddedIntInto(moneyTextBuf[:], money, 4)
 		u.cachedMoneyValue = money
 	}
-	firefliesText := u.cachedFirefliesText
 	fireflies := min(len(state.Game.Fireflies), 99)
-	if firefliesText == "" || fireflies != u.cachedFirefliesValue {
-		firefliesText = formatPaddedInt(fireflies, 2)
-		u.cachedFirefliesText = firefliesText
+	if firefliesCountBuf[0] == 0 || fireflies != u.cachedFirefliesValue {
+		formatPaddedIntInto(firefliesCountBuf[:], fireflies, 2)
 		u.cachedFirefliesValue = fireflies
 	}
 
 	drawRightAlignedWithColoredZeros(
 		assets.FontEG_6x9,
-		moneyText,
+		moneyTextBuf[:],
 		firefly.P(29, 12),
 		firefly.ColorLightGray,
 		firefly.ColorDarkGray)
 	drawRightAlignedWithColoredZeros(
 		assets.FontEG_6x9,
-		firefliesText,
+		firefliesCountBuf[:],
 		firefly.P(59, 12),
 		firefly.ColorLightGray,
 		firefly.ColorDarkGray)
 }
 
-func drawRightAlignedWithColoredZeros(font firefly.Font, text string, right firefly.Point, zeroColor, textColor firefly.Color) {
-	width := font.LineWidth(text)
+func drawRightAlignedWithColoredZeros(font firefly.Font, text []byte, right firefly.Point, zeroColor, textColor firefly.Color) {
+	width := font.CharWidth() * len(text)
 	left := right.Add(firefly.P(-width, 0))
-	withoutZeros := strings.TrimLeft(text, "0")
+	withoutZeros := bytes.TrimLeft(text, "0")
 	zeros := text[:len(text)-len(withoutZeros)]
-	font.Draw(zeros, left, zeroColor)
-	font.Draw(withoutZeros, left.Add(firefly.P(font.LineWidth(zeros), 0)), textColor)
+	font.DrawBytes(zeros, left, zeroColor)
+	font.DrawBytes(withoutZeros, left.Add(firefly.P(font.CharWidth()*len(zeros), 0)), textColor)
 }
 
-func formatPaddedInt(value, width int) string {
-	buf := make([]byte, width)
-	for i := range buf {
+func formatPaddedIntInto(buf []byte, value, width int) {
+	for i := range width {
 		buf[i] = '0'
 	}
 	index := len(buf) - 1
@@ -72,5 +70,4 @@ func formatPaddedInt(value, width int) string {
 		value /= 10
 		index -= 1
 	}
-	return string(buf)
 }

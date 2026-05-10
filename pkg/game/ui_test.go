@@ -37,7 +37,9 @@ func TestFormatPaddedInt(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got := formatPaddedInt(test.num, test.width)
+			buf := make([]byte, test.width)
+			formatPaddedIntInto(buf, test.num, test.width)
+			got := string(buf)
 			if got != test.want {
 				t.Errorf("wrong result from formatPaddedInt(%d, %d)\nwant: %q\ngot:  %q",
 					test.num, test.width, test.want, got)
