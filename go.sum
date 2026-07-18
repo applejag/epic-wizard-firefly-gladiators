@@ -1,6 +1,6 @@
-github.com/applejag/firefly-go-math v0.2.1 h1:uUswt1hBG96F/rTcS/DZ/9/kPze0SEmQIsL95GBjOWQ=
-github.com/applejag/firefly-go-math v0.2.1/go.mod h1:mjY0WcVMrmkPGtsGlczdPYdP9hI9mU+z7hmsBPktyXg=
-github.com/firefly-zero/firefly-go v0.12.0 h1:yNFB33cgYZIPWKZTDNrjDDCw5tqx+CzMGms+daXoz88=
-github.com/firefly-zero/firefly-go v0.12.0/go.mod h1:osit9/kxcqSUBVozePb7LNzOHy3FQ7ii1Z0mL82pWu0=
-github.com/orsinium-labs/tinymath v1.1.0 h1:KomdsyLHB7vE3f1nRAJF2dyf1m/gnM2HxfTeV1vS5UA=
-github.com/orsinium-labs/tinymath v1.1.0/go.mod h1:WPXX6ei3KSXG7JfA03a+ekCYaY9SWN4I+JRl2p6ck+A=
+github.com/applejag/firefly-go-math v0.2.2 h1:79X3JZSjsuIfeybkm/OQL2ckAdTAObAi+NfmOcBMKZE=
+github.com/applejag/firefly-go-math v0.2.2/go.mod h1:ZPYdPXaFIxZxnwawIjip7S5TcIlMq9M7IRyjjzU6kvA=
+github.com/firefly-zero/firefly-go v0.13.0 h1:913nYREHXk4w3uAMJ/WCa5SJQeEMyZqpplUU+8dqmMY=
+github.com/firefly-zero/firefly-go v0.13.0/go.mod h1:9emABajSRtkvE0+8uajSbuY95R7DWVR6u+srfsLLvOo=
+github.com/orsinium-labs/tinymath v1.2.0 h1:mxbQzDQz00XQvPqPmIRCgXvYMyPCgCng1kYWfvjXr6M=
+github.com/orsinium-labs/tinymath v1.2.0/go.mod h1:WPXX6ei3KSXG7JfA03a+ekCYaY9SWN4I+JRl2p6ck+A=
