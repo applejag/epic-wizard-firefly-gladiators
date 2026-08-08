@@ -112,7 +112,7 @@ func (g *GameState) LoadSave() bool {
 		return false
 	}
 	g.Reset()
-	if err := g.UnmarshalBinary(file); err != nil {
+	if err := g.UnmarshalBinary(file.Bytes()); err != nil {
 		var buf [100]byte
 		n := copy(buf[0:], "failed to load save: ")
 		n += copy(buf[n:], err.Error())
@@ -122,7 +122,7 @@ func (g *GameState) LoadSave() bool {
 
 	var buf [42]byte
 	n := copy(buf[0:], "loaded saved game, size: ")
-	n += util.FormatIntInto(buf[n:], len(file))
+	n += util.FormatIntInto(buf[n:], len(file.Bytes()))
 	n += copy(buf[n:], " B")
 	firefly.LogDebugBytes(buf[:n])
 	return true
