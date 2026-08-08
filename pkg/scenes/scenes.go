@@ -3,7 +3,7 @@ package scenes
 var SwitchScene func(scene Scene)
 
 const (
-	LongestSceneName = 15
+	LongestSceneName = 19
 )
 
 var AllScenes = []Scene{
